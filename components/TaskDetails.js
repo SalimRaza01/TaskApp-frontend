@@ -86,10 +86,10 @@ const TaskDetails = ({ route }) => {
 
   const handleToggleCompletion = taskId => {
     const newStatus = task.status === 'Pending' ? 'Completed' : 'Pending';
-  
+
     console.log('Current task status:', task.status);
     console.log('New status to be sent:', newStatus);
-  
+
     axios
       .put(
         `${BASE_URL}/update/${taskId}`,
@@ -104,7 +104,7 @@ const TaskDetails = ({ route }) => {
       .then(response => {
         console.log('Task status updated:', response.data);
         setTask(response.data);
-  
+
         if (route.params.handleUpdateTaskStatus) {
           route.params.handleUpdateTaskStatus(response.data);
         }
@@ -113,7 +113,7 @@ const TaskDetails = ({ route }) => {
         console.error('Error updating task status:', error);
       });
   };
-  
+
   const rangeDates = {};
   let currentDate, endDate;
 
@@ -220,82 +220,89 @@ const TaskDetails = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.Tasktitle]}>Task: {task.title}</Text>
-
-      <Text style={styles.Taskdecription}>Description: {task.description}</Text>
-
-      <View style={styles.divider} />
-
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-        <View style={styles.Prioritybox}>
-          <Text style={styles.TaskPriorityText}>
-            Priority: {task.priority}{' '}
-          </Text>
-        </View>
-        <View style={styles.Deadlinebox}>
-          <Text style={styles.DeadlineText}>
-            Deadline: {formatDeadline(task.deadline).formattedDeadline}
-          </Text>
-        </View>
-
-        <TouchableOpacity
-          style={[
-            styles.StatusBox,
-            task.status === 'Completed' && styles.completedButton,
-          ]}
-          onPress={() => handleToggleCompletion(task._id)}>
-          <Text style={styles.buttonText}>
-            {task.status === 'Pending' ? 'Completed' : 'Pending'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <Calendar
-        style={styles.datePicker}
-        current={deadline}
-        markingType={'period'}
-        markedDates={{
-          ...rangeDates,
-          ...highlightedDates,
-          [deadline.split('T')[0]]: { color: 'red', endingDay: true },
-        }}
-        renderDay={(date, item) => customDayRenderer(date, item)}
-      />
-
-
+    <KeyboardAvoidingView
+    style={styles.container}
+    behavior={Platform.OS === 'ios' ? 'padding' : null}
+    keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
       <ScrollView
-        style={styles.commentContainer}
+        contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
-        {comments.map((comment, index) => (
-          <View key={index} style={styles.commentBox}>
-            <Text style={styles.commentText}>{comment.message}</Text>
+        <View style={styles.container}>
+          <Text style={[styles.Tasktitle]}>Task: {task.title}</Text>
+
+          <Text style={styles.Taskdecription}>Description: {task.description}</Text>
+
+          <View style={styles.divider} />
+
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <View style={styles.Prioritybox}>
+              <Text style={styles.TaskPriorityText}>
+                Priority: {task.priority}{' '}
+              </Text>
+            </View>
+            <View style={styles.Deadlinebox}>
+              <Text style={styles.DeadlineText}>
+                Deadline: {formatDeadline(task.deadline).formattedDeadline}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={[
+                styles.StatusBox,
+                task.status === 'Completed' && styles.completedButton,
+              ]}
+              onPress={() => handleToggleCompletion(task._id)}>
+              <Text style={styles.buttonText}>
+                {task.status === 'Pending' ? 'Completed' : 'Pending'}
+              </Text>
+            </TouchableOpacity>
           </View>
-        ))}
+          <Calendar
+            style={styles.datePicker}
+            current={deadline}
+            markingType={'period'}
+            markedDates={{
+              ...rangeDates,
+              ...highlightedDates,
+              [deadline.split('T')[0]]: { color: 'red', endingDay: true },
+            }}
+            renderDay={(date, item) => customDayRenderer(date, item)}
+          />
+
+          <ScrollView
+            style={styles.commentContainer}
+            showsVerticalScrollIndicator={false}>
+            {comments.map((comment, index) => (
+              <View key={index} style={styles.commentBox}>
+                <Text style={styles.commentText}>{comment.message}</Text>
+              </View>
+            ))}
+          </ScrollView>
+
+          <TextInput
+            style={[
+              styles.input,
+              { color: '#000', backgroundColor: '#fff', ...styles.shadow },
+            ]}
+            placeholderTextColor="#999"
+            placeholder="  Comment"
+            onChangeText={handleCommentChange}
+            value={comment}
+          />
+
+          <TouchableOpacity
+            style={styles.CommentSendBtn}
+            onPress={handleCommentSubmit}>
+            <Image style={styles.SendIcon} source={require('../assets/Send.png')} />
+          </TouchableOpacity>
+        </View>
       </ScrollView>
-
-      <TextInput
-        style={[
-          styles.input,
-          { color: '#000', backgroundColor: '#fff', ...styles.shadow },
-        ]}
-        placeholderTextColor="#999"
-        placeholder="  Comment"
-        onChangeText={handleCommentChange}
-        value={comment}
-      />
-
-      <TouchableOpacity
-        style={styles.CommentSendBtn}
-        onPress={handleCommentSubmit}>
-        <Image style={styles.SendIcon} source={require('../assets/Send.png')} />
-      </TouchableOpacity>
-    </View>
-
+    </KeyboardAvoidingView>
   );
 
 };
@@ -305,8 +312,17 @@ export default TaskDetails;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // padding: 20,
+    // backgroundColor: '#f7f7f7',
+  },
+  scrollContainer: {
+    flexGrow: 1,
     padding: 20,
-    backgroundColor: '#f7f7f7',
+       backgroundColor: '#f7f7f7',
+  },
+  commentContainer:{
+    height: width * 0.08,
+    marginTop: height * 0.03,
   },
   completedButton: {
     backgroundColor: '#808080',
