@@ -8,7 +8,9 @@ const TaskList = ({
   tasks,
   handleToggleCompletion,
   response,
-  openTaskDetails
+  openTaskDetails,
+  token,
+  username
 }) => {
 
   const completedTasks = tasks.filter((task) => task.status === 'Completed');
@@ -25,6 +27,8 @@ const TaskList = ({
           handleToggleCompletion={handleToggleCompletion}
           response={response}
           openTaskDetails={openTaskDetails}
+          token={token}
+          username={username}
         />
       ))}
     </ScrollView>

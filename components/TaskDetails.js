@@ -8,7 +8,6 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  Keyboard,
   Platform,
   KeyboardAvoidingView,
 } from 'react-native';
@@ -23,11 +22,13 @@ const TaskDetails = ({ route }) => {
   const [highlightedDates, setHighlightedDates] = useState({});
   const [task, setTask] = useState({ ...route.params.task, status: 'Pending' });
   const { token } = route.params;
+  const { username } = route.params;
   const { deadline, createdAt } = task;
   const [comments, setComments] = useState(task.comments || []);
   const [comment, setComment] = useState('');
 
   useEffect(() => {
+    console.log('Comments:', comments);
     setComments(task.comments || []);
 
     const updatedHighlightedDates = {};
@@ -69,7 +70,7 @@ const TaskDetails = ({ route }) => {
     try {
       const commentData = {
         taskId: task._id,
-        comments: [comment],
+        comment,
       };
 
       const response = await axios.post(`${BASE_URL}/save-comment`, commentData, {
@@ -89,34 +90,37 @@ const TaskDetails = ({ route }) => {
     }
   };
 
-  const handleToggleCompletion = taskId => {
-    const newStatus = task.status === 'Pending' ? 'Completed' : 'Pending';
+  const handleToggleCompletion = async (taskId) => {
+    try {
+      const newStatus = task.status === 'Completed' ? 'Pending' : 'Completed';
 
-    console.log('Current task status:', task.status);
-    console.log('New status to be sent:', newStatus);
+      setTask((prevTask) => {
+        return { ...prevTask, status: newStatus };
+      });
 
-    axios
-      .put(
-        `${BASE_URL}/update/${taskId}`,
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-      .then(response => {
+      setTimeout(async () => {
+        const response = await axios.put(
+          `${BASE_URL}/update/${taskId}`,
+          { status: newStatus },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
         console.log('Task status updated:', response.data);
-        setTask(response.data);
+
+        setTask((prevTask) => ({ ...prevTask, status: response.data.status }));
 
         if (route.params.handleUpdateTaskStatus) {
           route.params.handleUpdateTaskStatus(response.data);
         }
-      })
-      .catch(error => {
-        console.error('Error updating task status:', error);
-      });
+      }, 0);
+    } catch (error) {
+      console.error('Error updating task status:', error);
+    }
   };
 
   const rangeDates = {};
@@ -224,6 +228,21 @@ const TaskDetails = ({ route }) => {
     return null;
   };
 
+  const fetchUserByEmail = async (email) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/get-user-by-email?email=${email}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user by email:', error);
+      return null;
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -232,6 +251,8 @@ const TaskDetails = ({ route }) => {
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
+
+
         <View style={styles.container}>
           <Text style={[styles.Tasktitle]}>Task: {task.title}</Text>
 
@@ -263,9 +284,10 @@ const TaskDetails = ({ route }) => {
               ]}
               onPress={() => handleToggleCompletion(task._id)}>
               <Text style={styles.buttonText}>
-                {task.status === 'Pending' ? 'Completed' : 'Pending'}
+                {task.status === 'Completed' ? 'Mark Pending' : 'Pending'}
               </Text>
             </TouchableOpacity>
+
           </View>
           <Calendar
             style={styles.datePicker}
@@ -282,8 +304,13 @@ const TaskDetails = ({ route }) => {
           <ScrollView
             style={styles.commentContainer}
             showsVerticalScrollIndicator={false}>
+
             {comments.map((comment, index) => (
               <View key={index} style={styles.commentBox}>
+                {console.log('Commenter:', comment.commenter)}
+                <Text style={styles.commentor}>
+                  {comment.commenter ? comment.commenter.username || comment.commenter.email : 'Unknown User'}
+                </Text>
                 <Text style={styles.commentText}>{comment.message}</Text>
               </View>
             ))}
@@ -459,6 +486,7 @@ const styles = StyleSheet.create({
     padding: width * 0.04,
     borderRadius: width * 1,
     elevation: 0,
+    paddingLeft: 30,
   },
   commentText: {
     fontSize: width * 0.04,
@@ -481,4 +509,10 @@ const styles = StyleSheet.create({
     shadowColor: '#000000',
     overflow: 'hidden',
   },
+  commentor: {
+    fontSize: width * 0.03,
+    fontWeight: 'bold',
+    marginTop: -7,
+    color: '#333',
+  }
 });

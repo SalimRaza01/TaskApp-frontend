@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
-const TaskItem = ({ task, response, openTaskDetails }) => {
+const TaskItem = ({ task, response, openTaskDetails, token, username }) => {
 
   const navigation = useNavigation();
 
@@ -95,7 +95,7 @@ const TaskItem = ({ task, response, openTaskDetails }) => {
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => openTaskDetails(task)}
+          onPress={() => openTaskDetails(task, token, username)}
           style={[styles.ViewTaskButton]}
         >
           <Text style={styles.buttonText}>View Task</Text>

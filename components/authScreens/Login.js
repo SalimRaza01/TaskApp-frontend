@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Keyboard,
+  Platform,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Dimensions,
+  TextInput
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CheckBox from '@react-native-community/checkbox';
@@ -48,8 +60,15 @@ export default function Login() {
   };
 
   return (
+    <KeyboardAvoidingView
+    style={styles.container}
+    behavior={Platform.OS === 'ios' ? 'padding' : null}
+    keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
+    <ScrollView
+      contentContainerStyle={styles.scrollContainer}
+      showsVerticalScrollIndicator={false}>
     <View style={styles.container}>
-      <View style={{}}>
+      <View>
         <Image style={styles.LoginImage} source={require('../../assets/LoginImage.png')} />
         <Text style={styles.AppName}>TaskApp</Text>
         <Text style={styles.WelcomeText}>Welcome to</Text>
@@ -77,13 +96,13 @@ export default function Login() {
           onChangeText={text => setPassword(text)}
           secureTextEntry
         />
-        <View style={styles.stayLoggedInContainer}>
+        {/* <View style={styles.stayLoggedInContainer}>
           <CheckBox style={styles.checkbox}
             value={stayLoggedIn}
             onValueChange={value => setStayLoggedIn(value)}
           />
           <Text style={styles.stayLoggedInText}>Stay Logged In</Text>
-        </View>
+        </View> */}
 
         <View style={{ alignContent: "center", alignItems: "center" }}>
           <TouchableOpacity
@@ -94,14 +113,20 @@ export default function Login() {
         </View>
       </View>
     </View>
+          </ScrollView>
+          </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: "#007BFF",
   },
+
   WelcomeText: {
     fontSize: width * 0.03,
     fontWeight: "bold",
@@ -177,14 +202,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#007BFF",
     height: 1,
   },
-  divider2: {
-    marginTop: height * 0.035,
-    backgroundColor: "#000000",
-    height: 0.6,
-    width: width * 0.17
-  },
+
   stayLoggedInContainer: {
-    flexDirection:"row",
+    flexDirection: "row",
     marginLeft: width * 0.02,
     marginTop: height * 0.02,
   },

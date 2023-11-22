@@ -181,14 +181,16 @@ const HomeScreen = ({ route }) => {
   const openModal = () => {
     setModalVisible(true);
   };
-
+  
   const openTaskDetails = (task) => {
     navigation.navigate('TaskDetails', {
       task: task,
       handleToggleCompletion: handleToggleCompletion,
       token: token,
+      username: username
     });
   };
+  
 
   return (
     <View style={styles.container}>
@@ -217,6 +219,8 @@ const HomeScreen = ({ route }) => {
             tasks={tasks}
             handleToggleCompletion={handleToggleCompletion}
             openTaskDetails={openTaskDetails}
+            token={token}
+            username={username}
           />
         )}
       </ScrollView>
