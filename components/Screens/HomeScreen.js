@@ -1,0 +1,436 @@
+import React, { useState, useEffect } from 'react';
+import { View, Image, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView, Button } from 'react-native';
+import TaskModal from '../TaskModal';
+import TaskList from '../TaskList';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+
+const { width, height } = Dimensions.get('window');
+
+const HomeScreen = ({ route }) => {
+  const navigation = useNavigation();
+
+  const [token, setToken] = useState('');
+  const [tasks, setTasks] = useState([]);
+  const [task, setTask] = useState({
+    title: '',
+    description: '',
+    status: 'Pending',
+    deadline: '',
+    createdAt: '',
+    priority: '',
+    assignedUser: '',
+  });
+
+  const [assignedUser, setAssignedUser] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [validationError, setValidationError] = useState(false);
+  const [markedDates, setMarkedDates] = useState({});
+
+  const BASE_URL = 'https://taskapp-service.onrender.com';
+
+  useEffect(() => {
+    const retrieveAuthToken = async () => {
+      try {
+        const retrievedToken = await AsyncStorage.getItem('authToken');
+        if (retrievedToken) {
+          setToken(retrievedToken);
+          console.log('Retrieved token:', retrievedToken);
+          fetchTasks(retrievedToken);
+        }
+      } catch (error) {
+        console.error('Error retrieving token:', error);
+      }
+    };
+    retrieveAuthToken();
+  }, [route.params]);
+
+  const { username } = route.params;
+
+ const fetchTasks = (token) => {
+  axios
+    .get(`${BASE_URL}/send-data`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      console.log('API Response:', response.data);
+      if (response.status === 200) {
+        const { assignedTasks, userTasks } = response.data;
+        const markedDates = assignedTasks.concat(userTasks).reduce((dates, task) => {
+          try {
+            const createdDate = new Date(task.createdAt).toISOString().split('T')[0];
+            const deadlineDate = new Date(task.deadline).toISOString().split('T')[0];
+            dates[createdDate] = { selected: true, selectedColor: "#0A79DF" };
+            dates[deadlineDate] = { selected: true, selectedColor: "#0A79DF" };
+          } catch (error) {
+            console.error('Error processing date:', error);
+            console.error('Task with problematic dates:', task);
+          }
+          return dates;
+        }, {});
+        
+        setTasks(assignedTasks.concat(userTasks));
+        setMarkedDates(markedDates);
+      } else {
+        console.error('Error fetching tasks:', response.data.message);
+      }
+    })
+    .catch((error) => console.error('Error fetching tasks:', error));
+};
+
+  const handleAddTask = () => {
+    if (!task.title || !task.deadline || !task.priority) {
+      setValidationError(true);
+      return;
+    }
+
+    const updatedTask = {
+      ...task,
+      createdAt: new Date().toLocaleString(),
+      ...route.params,
+      assignedUser: assignedUser,
+    };
+
+    axios.post(`${BASE_URL}/send-data`, updatedTask, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+      .then(response => {
+        setModalVisible(false);
+        setTask({
+          title: "",
+          description: "",
+          status: "Pending",
+          deadline: "",
+          priority: "",
+          createdAt: "",
+          assignedUser: "",
+        });
+        setTasks([...tasks, response.data]);
+      })
+      .catch(error => {
+        if (error.response && error.response.status === 401) {
+          console.log('Error in API request:', error);
+        } else {
+          console.error('Error adding data:', error);
+        }
+      });
+  };
+
+  const handleToggleCompletion = taskId => {
+    axios
+      .put(
+        `${BASE_URL}/update/${taskId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      .then(response => {
+        console.log('Task status updated:', response.data);
+      })
+      .catch(error => {
+        console.error('Error updating task status:', error);
+      });
+  };
+  
+  const handleDeleteTask = (taskId) => {
+    axios.delete(`${BASE_URL}/delete/${taskId}`)
+      .then(() => {
+        setTasks(tasks.filter(t => t._id !== taskId));
+      })
+      .catch(error => console.error('Error deleting task:', error));
+  };
+
+  const handleCancel = () => {
+    if (task._id) {
+      setTask({
+        title: '',
+        description: '',
+        status: 'Pending',
+        deadline: '',
+        createdAt: '',
+        priority: '',
+        assignedUser: '',
+      });
+    } else {
+      setModalVisible(false);
+      setValidationError(false);
+    }
+  };
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const openTaskDetails = (task) => {
+    navigation.navigate('TaskDetails', {
+      task: task,
+      handleToggleCompletion: handleToggleCompletion,
+      token: token,
+    });
+  };
+  const handleUpdateTaskStatus = (updatedTask) => {
+
+    console.log('Task status updated in HomeScreen:', updatedTask);
+  };
+  
+  return (
+    <View style={styles.container}>
+
+      <Text style={styles.WelcomeText}>Welcome,</Text>
+
+      <Text style={styles.UserName}>{username}</Text>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Profile')} >
+        <Image style={styles.UserProfileImage} source={require('../../assets/profile.png')} />
+      </TouchableOpacity>
+
+      <View style={styles.divider} />
+
+      <ScrollView showsVerticalScrollIndicator={false} >
+
+        <View style={{ marginBottom: width * 0.03 }}>
+        </View>
+
+        {tasks.length === 0 ? (
+          <Image
+            source={require('../../assets/NoTask.png')}
+            style={styles.noTasksImage} />
+        ) : (
+          <TaskList
+            tasks={tasks}
+            handleToggleCompletion={handleToggleCompletion}
+            openTaskDetails={openTaskDetails}
+          />
+        )}
+      </ScrollView>
+      <TouchableOpacity style={styles.addButton} onPress={openModal} >
+        <Text style={styles.addButtonText}>Add Task</Text>
+      </TouchableOpacity>
+      <TaskModal
+        modalVisible={modalVisible}
+        task={task}
+        setTask={setTask}
+        handleAddTask={handleAddTask}
+        handleCancel={handleCancel}
+        validationError={validationError}
+        assignedUser={assignedUser}
+        setAssignedUser={setAssignedUser}
+      />
+    </View>
+  );
+};
+export default HomeScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#FFFFFF",
+  },
+  WelcomeText: {
+    fontSize: width * 0.04,
+    fontWeight: "bold",
+    marginTop: height * -0.01,
+    marginBottom: -10,
+    color: "#333",
+    textAlign: "left",
+  },
+  UserName: {
+    fontSize: width * 0.06,
+    fontWeight: "bold",
+    marginTop: height * 0.01,
+    marginBottom: -10,
+    color: "#333",
+    textAlign: "left",
+  },
+  divider: {
+    marginTop: height * 0.04,
+    backgroundColor: "#007BFF",
+    height: 2,
+  },
+  addButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#007BFF",
+    paddingVertical: height * 0.02,
+    borderRadius: width * 0.02,
+    marginTop: height * 0.01,
+    marginBottom: height * 0.12,
+    width: width * 0.3,
+    height: height * 0.056,
+    marginLeft: width * 0.32,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontSize: width * 0.03,
+    fontWeight: "bold",
+  },
+  taskItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    padding: width * 0.04,
+    borderRadius: width * 0.03,
+    elevation: 5,
+  },
+  taskTextContainer: {
+    flex: 1,
+  },
+  taskText: {
+    fontSize: width * 0.05,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: height * 0.003,
+  },
+  completedTaskText: {
+    textDecorationLine: "line-through",
+    color: "gray",
+  },
+  taskDescription: {
+    fontSize: width * 0.03,
+    color: "#666",
+    marginBottom: height * 0.03,
+  },
+  taskStatus: {
+    fontSize: width * 0.03,
+    color: "#666",
+  },
+  taskDeadline: {
+    color: "#FF3B12",
+    fontSize: width * 0.03,
+  },
+  taskCreatedAt: {
+    color: "#007BFF",
+    fontSize: width * 0.028,
+    marginBottom: height * 0.02,
+  },
+  buttonContainer: {
+    flexDirection: "column",
+    marginVertical: height * 0.001,
+  },
+  completeButton: {
+    backgroundColor: "#4CAF50",
+    borderRadius: width * 0.015,
+    padding: width * 0.022,
+    marginBottom: height * 0.01,
+    marginRight: width * 0.03,
+    alignItems: "center",
+    width: width * 0.25,
+  },
+  completedButton: {
+    backgroundColor: "#808080",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: width * 0.035,
+  },
+  deleteButton: {
+    backgroundColor: "#FF9500",
+    borderRadius: width * 0.015,
+    padding: width * 0.022,
+    alignItems: "center",
+    width: width * 0.25,
+  },
+  taskTime: {
+    fontSize: width * 0.04,
+    color: "#666",
+  },
+  button: {
+    padding: width * 0.040,
+    borderRadius: width * 0.03,
+    marginTop: height * 0.01,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: width * 0.035,
+    fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    padding: width * 0.05,
+    backgroundColor: "#FFFFFF",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: width * 0.03,
+    marginBottom: height * 0.02,
+    borderRadius: width * 0.02,
+    fontSize: width * 0.04,
+  },
+  inputLabel: {
+    fontSize: width * 0.04,
+    fontWeight: "bold",
+  },
+  errorText: {
+    color: "#FF3B30",
+    fontSize: width * 0.04,
+    marginBottom: height * 0.02,
+  },
+  taskDay: {
+    color: "#FFFFFF",
+    fontSize: width * 0.03,
+    alignSelf: "center",
+    fontWeight: "600",
+  },
+  taskDate: {
+    color: "#0A79DF",
+    marginBottom: height * 0.003,
+    fontSize: width * 0.08,
+    fontWeight: "600",
+    alignSelf: "center",
+  },
+  taskdaystyle: {
+    alignContent: "center",
+    justifyContent: "center",
+    backgroundColor: "#FF3B30",
+    height: height * 0.03,
+    borderTopLeftRadius: width * 0.03,
+    borderTopRightRadius: width * 0.03,
+  },
+  taskDeadlinebottom: {
+    color: "#707070",
+    marginBottom: height * 0.008,
+    fontSize: width * 0.021,
+    fontWeight: "600",
+    alignSelf: "center",
+  },
+  UserProfileImage: {
+    alignSelf: "flex-end",
+    width: width * 0.11,
+    height: width * 0.11,
+    marginBottom: height * -0.012,
+    marginTop: height * -0.05,
+  },
+  ViewTaskButton: {
+    backgroundColor: "#007BFF",
+    borderRadius: width * 0.015,
+    padding: width * 0.022,
+    alignItems: "center",
+    width: width * 0.25,
+  },
+  swipeoutContainer: {
+    backgroundColor: 'lightgray',
+    height: width * 0.37,
+  },
+  noTasksImage: {
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    resizeMode: "contain",
+    width: width * 0.75,
+    height: width * 0.75,
+    marginTop: height * 0.02,
+  }
+});
