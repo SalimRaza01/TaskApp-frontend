@@ -55,38 +55,38 @@ const HomeScreen = ({ route }) => {
 
   const { username } = route.params;
 
- const fetchTasks = (token) => {
-  axios
-    .get(`${BASE_URL}/send-data`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-    .then((response) => {
-      console.log('API Response:', response.data);
-      if (response.status === 200) {
-        const { assignedTasks, userTasks } = response.data;
-        const markedDates = assignedTasks.concat(userTasks).reduce((dates, task) => {
-          try {
-            const createdDate = new Date(task.createdAt).toISOString().split('T')[0];
-            const deadlineDate = new Date(task.deadline).toISOString().split('T')[0];
-            dates[createdDate] = { selected: true, selectedColor: "#0A79DF" };
-            dates[deadlineDate] = { selected: true, selectedColor: "#0A79DF" };
-          } catch (error) {
-            console.error('Error processing date:', error);
-            console.error('Task with problematic dates:', task);
-          }
-          return dates;
-        }, {});
-        
-        setTasks(assignedTasks.concat(userTasks));
-        setMarkedDates(markedDates);
-      } else {
-        console.error('Error fetching tasks:', response.data.message);
-      }
-    })
-    .catch((error) => console.error('Error fetching tasks:', error));
-};
+  const fetchTasks = (token) => {
+    axios
+      .get(`${BASE_URL}/send-data`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        console.log('API Response:', response.data);
+        if (response.status === 200) {
+          const { assignedTasks, userTasks } = response.data;
+          const markedDates = assignedTasks.concat(userTasks).reduce((dates, task) => {
+            try {
+              const createdDate = new Date(task.createdAt).toISOString().split('T')[0];
+              const deadlineDate = new Date(task.deadline).toISOString().split('T')[0];
+              dates[createdDate] = { selected: true, selectedColor: "#0A79DF" };
+              dates[deadlineDate] = { selected: true, selectedColor: "#0A79DF" };
+            } catch (error) {
+              console.error('Error processing date:', error);
+              console.error('Task with problematic dates:', task);
+            }
+            return dates;
+          }, {});
+
+          setTasks(assignedTasks.concat(userTasks));
+          setMarkedDates(markedDates);
+        } else {
+          console.error('Error fetching tasks:', response.data.message);
+        }
+      })
+      .catch((error) => console.error('Error fetching tasks:', error));
+  };
 
   const handleAddTask = () => {
     if (!task.title || !task.deadline || !task.priority) {
@@ -152,7 +152,7 @@ const HomeScreen = ({ route }) => {
         console.error('Error updating task status:', error);
       });
   };
-  
+
   const handleDeleteTask = (taskId) => {
     axios.delete(`${BASE_URL}/delete/${taskId}`)
       .then(() => {
@@ -189,7 +189,6 @@ const HomeScreen = ({ route }) => {
       token: token,
     });
   };
-  
 
   return (
     <View style={styles.container}>

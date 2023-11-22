@@ -15,66 +15,66 @@ const TaskItem = ({ task, response, openTaskDetails }) => {
   const navigation = useNavigation();
 
   const formatDeadline = deadline => {
-  try {
-    if (!deadline) {
-      console.warn('Invalid Deadline:', deadline);
-      return { formattedDeadline: 'Invalid Deadline' };
-    }
-
-    const dateParts = deadline.split('/');
-    if (dateParts.length === 3) {
-      const year = parseInt(dateParts[0]);
-      const month = parseInt(dateParts[1]) - 1;
-      const day = parseInt(dateParts[2]);
-      const date = new Date(year, month, day);
-
-      if (isNaN(date.getTime())) {
+    try {
+      if (!deadline) {
         console.warn('Invalid Deadline:', deadline);
         return { formattedDeadline: 'Invalid Deadline' };
       }
 
-      const options = { month: 'short' };
-      const monthName = new Intl.DateTimeFormat('en-US', options).format(date);
-      const formattedDeadline = `${day.toString().padStart(2, '0')} ${monthName}`;
+      const dateParts = deadline.split('/');
+      if (dateParts.length === 3) {
+        const year = parseInt(dateParts[0]);
+        const month = parseInt(dateParts[1]) - 1;
+        const day = parseInt(dateParts[2]);
+        const date = new Date(year, month, day);
 
-      return { day, monthName, formattedDeadline };
-    } else {
-      const date = new Date(deadline);
+        if (isNaN(date.getTime())) {
+          console.warn('Invalid Deadline:', deadline);
+          return { formattedDeadline: 'Invalid Deadline' };
+        }
 
-      if (isNaN(date.getTime())) {
-        console.warn('Invalid Deadline:', deadline);
-        return { formattedDeadline: 'Invalid Deadline' };
+        const options = { month: 'short' };
+        const monthName = new Intl.DateTimeFormat('en-US', options).format(date);
+        const formattedDeadline = `${day.toString().padStart(2, '0')} ${monthName}`;
+
+        return { day, monthName, formattedDeadline };
+      } else {
+        const date = new Date(deadline);
+
+        if (isNaN(date.getTime())) {
+          console.warn('Invalid Deadline:', deadline);
+          return { formattedDeadline: 'Invalid Deadline' };
+        }
+
+        const day = date.getDate().toString().padStart(2, '0');
+        const options = { month: 'short' };
+        const monthName = new Intl.DateTimeFormat('en-US', options).format(date);
+        const formattedDeadline = `${day} ${monthName}`;
+
+        return { day, monthName, formattedDeadline };
       }
-
-      const day = date.getDate().toString().padStart(2, '0');
-      const options = { month: 'short' };
-      const monthName = new Intl.DateTimeFormat('en-US', options).format(date);
-      const formattedDeadline = `${day} ${monthName}`;
-
-      return { day, monthName, formattedDeadline };
+    } catch (error) {
+      console.error('Error formatting deadline:', error);
+      return { formattedDeadline: 'Error Formatting Deadline' };
     }
-  } catch (error) {
-    console.error('Error formatting deadline:', error);
-    return { formattedDeadline: 'Error Formatting Deadline' };
-  }
-};
-const trimDescription = (description, maxLength) => {
-  if (description.length > maxLength) {
-    return `${description.substring(0, maxLength)}...`;
-  }
-  return description;
-};
+  };
+  const trimDescription = (description, maxLength) => {
+    if (description.length > maxLength) {
+      return `${description.substring(0, maxLength)}...`;
+    }
+    return description;
+  };
   return (
     <View style={styles.taskItem}>
       <View style={styles.taskTextContainer}>
-      <View
-  style={[
-    styles.taskCompleteView,
-    { backgroundColor: task.status === 'Completed' ? '#4CAF50' : '#FF9500' },
-  ]}
->
-  <Text style={styles.taskCompleteTag}>{task.status}</Text>
-</View>
+        <View
+          style={[
+            styles.taskCompleteView,
+            { backgroundColor: task.status === 'Completed' ? '#4CAF50' : '#FF9500' },
+          ]}
+        >
+          <Text style={styles.taskCompleteTag}>{task.status}</Text>
+        </View>
 
         <Text style={styles.responseData}>{JSON.stringify(response)}</Text>
         <Text
@@ -217,5 +217,5 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 7,
     borderBottomRightRadius: 7,
   },
-  
+
 });

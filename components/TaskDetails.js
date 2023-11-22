@@ -61,27 +61,32 @@ const TaskDetails = ({ route }) => {
     setComment(text);
   };
 
-  const handleCommentSubmit = () => {
-    const commentData = {
-      taskId: task._id,
-      comments: [comment],
-    };
+  const [loading, setLoading] = useState(false);
 
-    axios
-      .post(`${BASE_URL}/save-comment`, commentData, {
+  const handleCommentSubmit = async () => {
+    setLoading(true);
+
+    try {
+      const commentData = {
+        taskId: task._id,
+        comments: [comment],
+      };
+
+      const response = await axios.post(`${BASE_URL}/save-comment`, commentData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-      })
-      .then(response => {
-        console.log('Comment saved:', response.data);
-        setComments(response.data.comments || []);
-        setComment('');
-      })
-      .catch(error => {
-        console.error('Error saving comment:', error);
       });
+
+      console.log('Comment saved:', response.data);
+      setComments(response.data.comments || []);
+      setComment('');
+    } catch (error) {
+      console.error('Error saving comment:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleToggleCompletion = taskId => {
@@ -221,9 +226,9 @@ const TaskDetails = ({ route }) => {
 
   return (
     <KeyboardAvoidingView
-    style={styles.container}
-    behavior={Platform.OS === 'ios' ? 'padding' : null}
-    keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
@@ -312,15 +317,13 @@ export default TaskDetails;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // padding: 20,
-    // backgroundColor: '#f7f7f7',
   },
   scrollContainer: {
     flexGrow: 1,
     padding: 20,
-       backgroundColor: '#f7f7f7',
+    backgroundColor: '#f7f7f7',
   },
-  commentContainer:{
+  commentContainer: {
     height: width * 0.08,
     marginTop: height * 0.03,
   },

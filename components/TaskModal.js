@@ -9,9 +9,9 @@ import {
   TextInput,
 } from 'react-native';
 import DatePicker from 'react-native-modern-datepicker';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const TaskModal = ({
   modalVisible,
@@ -28,14 +28,14 @@ const TaskModal = ({
       <View style={styles.modalContainer}>
         <Text style={styles.WelcomeText}>Create Task</Text>
         <TextInput
-          style={[styles.input, {color: '#000', backgroundColor: '#fff'}]}
+          style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
           placeholderTextColor="#999"
           placeholder="Title"
           value={task && task.title ? task.title : ''}
-          onChangeText={text => setTask({...task, title: text})}
+          onChangeText={text => setTask({ ...task, title: text })}
         />
         <TextInput
-          style={[styles.input, {color: '#000', backgroundColor: '#fff'}]}
+          style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
           placeholderTextColor="#999"
           placeholder="Description"
           value={task && task.description ? task.description : ''}
@@ -48,7 +48,7 @@ const TaskModal = ({
         />
 
         <TextInput
-          style={[styles.input, {color: '#000', backgroundColor: '#fff'}]}
+          style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
           placeholder="Assign Task to"
           placeholderTextColor="#999"
           value={assignedUser}
@@ -57,7 +57,7 @@ const TaskModal = ({
         <Text style={styles.inputLabel}>Set Priority:</Text>
         <Picker
           selectedValue={task && task.priority ? task.priority : ''}
-          onValueChange={value => setTask({...task, priority: value})}>
+          onValueChange={value => setTask({ ...task, priority: value })}>
           <Picker.Item label="Select Priority" value="" />
           <Picker.Item label="High" value="High" />
           <Picker.Item label="Medium" value="Medium" />
@@ -68,7 +68,7 @@ const TaskModal = ({
         <DatePicker
           mode="datepicker"
           selected={task && task.deadline ? task.deadline : ''}
-          onDateChange={date => setTask({...task, deadline: date})}
+          onDateChange={date => setTask({ ...task, deadline: date })}
         />
 
         {validationError && (
@@ -76,16 +76,16 @@ const TaskModal = ({
             Error: Please fill in the required fields
           </Text>
         )}
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <TouchableOpacity
-            style={[styles.button, {backgroundColor: '#007BFF'}]}
+            style={[styles.button, { backgroundColor: '#007BFF' }]}
             onPress={handleAddTask}>
             <Text style={styles.buttonText}>
               {task && task._id ? 'Update' : 'Add'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.button, {backgroundColor: '#FF3B30'}]}
+            style={[styles.button, { backgroundColor: '#FF3B30' }]}
             onPress={handleCancel}>
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>

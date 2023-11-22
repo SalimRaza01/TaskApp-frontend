@@ -18,9 +18,9 @@ const DrawerContent = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-    <TouchableOpacity onPress={() => navigation.navigate('Profile')} >
-      <Image style={styles.UserProfileImage} source={require('../assets/profile.png')} />
-    </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Profile')} >
+        <Image style={styles.UserProfileImage} source={require('../assets/profile.png')} />
+      </TouchableOpacity>
 
       <View style={styles.container2}>
 
