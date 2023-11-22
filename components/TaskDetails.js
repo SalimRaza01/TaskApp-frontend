@@ -289,10 +289,9 @@ const TaskDetails = ({ route }) => {
           <ScrollView
             style={styles.commentContainer}
             showsVerticalScrollIndicator={false}>
-
             {comments.map((comment, index) => (
               <View key={index} style={styles.commentBox}>
-                {console.log('Commenter:', comment.commenter)}
+                {/* {console.log('Comment:', comment)} */}
                 <Text style={styles.commentor}>
                   {comment.commenter ? comment.commenter.username || comment.commenter.email : 'Unknown User'}
                 </Text>
