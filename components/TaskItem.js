@@ -1,4 +1,3 @@
-
 import {
   View,
   Text,
@@ -8,17 +7,12 @@ import {
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { useFocusEffect } from '@react-navigation/native';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
-const TaskItem = ({ task, handleToggleCompletion, response, openTaskDetails }) => {
+const TaskItem = ({ task, response, openTaskDetails }) => {
 
-  const BASE_URL = 'https://taskapp-service.onrender.com';
   const navigation = useNavigation();
-  const [tasks, setTasks] = useState([]);
 
   const formatDeadline = deadline => {
   try {
@@ -64,30 +58,24 @@ const TaskItem = ({ task, handleToggleCompletion, response, openTaskDetails }) =
     return { formattedDeadline: 'Error Formatting Deadline' };
   }
 };
-
-const fetchTasks = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/send-data`);
-    setTasks(response.data);
-  } catch (error) {
-    console.error('Error fetching tasks:', error);
+const trimDescription = (description, maxLength) => {
+  if (description.length > maxLength) {
+    return `${description.substring(0, maxLength)}...`;
   }
+  return description;
 };
-useEffect(() => {
-  fetchTasks();
-}, [tasks]);
-
   return (
     <View style={styles.taskItem}>
       <View style={styles.taskTextContainer}>
-        <View
-          style={[
-            styles.taskCompleteView,
-            { backgroundColor: task.status === 'Completed' ? '#4CAF50' : '#FF9500' },
-          ]}
-        >
-          <Text style={styles.taskCompleteTag}>{task.status}</Text>
-        </View>
+      <View
+  style={[
+    styles.taskCompleteView,
+    { backgroundColor: task.status === 'Completed' ? '#4CAF50' : '#FF9500' },
+  ]}
+>
+  <Text style={styles.taskCompleteTag}>{task.status}</Text>
+</View>
+
         <Text style={styles.responseData}>{JSON.stringify(response)}</Text>
         <Text
           style={[
@@ -98,7 +86,7 @@ useEffect(() => {
           {task.title}
         </Text>
         <Text style={styles.taskDescription}>
-          Description: {task.description}
+          Description:  {trimDescription(task.description, 20)}
         </Text>
         {/* <Text style={styles.taskStatus}>Status: {task.status}</Text> */}
         <Text style={styles.taskDeadline}>

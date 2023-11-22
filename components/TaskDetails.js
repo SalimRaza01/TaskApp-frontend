@@ -8,6 +8,9 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Keyboard,
+  Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import axios from 'axios';
@@ -83,7 +86,10 @@ const TaskDetails = ({ route }) => {
 
   const handleToggleCompletion = taskId => {
     const newStatus = task.status === 'Pending' ? 'Completed' : 'Pending';
-
+  
+    console.log('Current task status:', task.status);
+    console.log('New status to be sent:', newStatus);
+  
     axios
       .put(
         `${BASE_URL}/update/${taskId}`,
@@ -98,7 +104,7 @@ const TaskDetails = ({ route }) => {
       .then(response => {
         console.log('Task status updated:', response.data);
         setTask(response.data);
-
+  
         if (route.params.handleUpdateTaskStatus) {
           route.params.handleUpdateTaskStatus(response.data);
         }
@@ -107,7 +113,7 @@ const TaskDetails = ({ route }) => {
         console.error('Error updating task status:', error);
       });
   };
-
+  
   const rangeDates = {};
   let currentDate, endDate;
 
@@ -213,9 +219,6 @@ const TaskDetails = ({ route }) => {
     return null;
   };
 
-  console.log('createdAt:', createdAt);
-  console.log('deadline:', deadline);
-
   return (
     <View style={styles.container}>
       <Text style={[styles.Tasktitle]}>Task: {task.title}</Text>
@@ -281,7 +284,7 @@ const TaskDetails = ({ route }) => {
           { color: '#000', backgroundColor: '#fff', ...styles.shadow },
         ]}
         placeholderTextColor="#999"
-        placeholder=" Comment"
+        placeholder="  Comment"
         onChangeText={handleCommentChange}
         value={comment}
       />
@@ -324,15 +327,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#007BFF',
     paddingVertical: height * 0.02,
     borderRadius: width * 1,
-    marginTop: height * -0.075,
-    marginBottom: height * 0.02,
-    width: width * 0.09,
-    height: height * 0.045,
+    marginTop: height * -0.078,
+    marginBottom: height * 0.03,
+    width: width * 0.1,
+    height: height * 0.046,
     marginLeft: width * 0.78,
   },
   SendIcon: {
-    width: width * 0.05,
-    height: width * 0.05,
+    width: width * 0.06,
+    height: width * 0.06,
   },
   UserProfileImage: {
     marginLeft: width * 0.001,
@@ -399,6 +402,7 @@ const styles = StyleSheet.create({
     marginBottom: height * 0.02,
     borderRadius: width * 1,
     fontSize: width * 0.04,
+    height: height * 0.07,
   },
   Taskdecription: {
     fontSize: width * 0.03,
@@ -430,7 +434,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: width * 0.02,
     width: width * 0.9,
-    height: height * 0.08,
+    height: height * 0.07,
     marginTop: height * 0.02,
     marginBottom: height * 0.01,
     padding: width * 0.04,

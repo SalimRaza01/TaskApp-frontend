@@ -46,6 +46,13 @@ const HomeScreen = ({ route }) => {
     retrieveAuthToken();
   }, [route.params]);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchTasks(token);
+    });
+    return unsubscribe;
+  }, [navigation, token]);
+
   const { username } = route.params;
 
  const fetchTasks = (token) => {
@@ -122,7 +129,7 @@ const HomeScreen = ({ route }) => {
       });
   };
 
-  const handleToggleCompletion = taskId => {
+  const handleToggleCompletion = (taskId) => {
     axios
       .put(
         `${BASE_URL}/update/${taskId}`,
@@ -134,10 +141,14 @@ const HomeScreen = ({ route }) => {
           },
         }
       )
-      .then(response => {
+      .then((response) => {
         console.log('Task status updated:', response.data);
+        const updatedTasks = tasks.map((t) =>
+          t._id === taskId ? { ...t, status: response.data.status } : t
+        );
+        setTasks(updatedTasks);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error updating task status:', error);
       });
   };
@@ -178,11 +189,8 @@ const HomeScreen = ({ route }) => {
       token: token,
     });
   };
-  const handleUpdateTaskStatus = (updatedTask) => {
-
-    console.log('Task status updated in HomeScreen:', updatedTask);
-  };
   
+
   return (
     <View style={styles.container}>
 
