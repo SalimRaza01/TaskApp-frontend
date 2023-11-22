@@ -228,21 +228,6 @@ const TaskDetails = ({ route }) => {
     return null;
   };
 
-  const fetchUserByEmail = async (email) => {
-    try {
-      const response = await axios.get(`${BASE_URL}/get-user-by-email?email=${email}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching user by email:', error);
-      return null;
-    }
-  };
-
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -336,7 +321,6 @@ const TaskDetails = ({ route }) => {
       </ScrollView>
     </KeyboardAvoidingView>
   );
-
 };
 
 export default TaskDetails;
