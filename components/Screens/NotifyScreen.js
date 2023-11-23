@@ -9,6 +9,7 @@ const NotifyScreen = (props) => {
   const [taskReminders, setTaskReminders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [notificationEnabled, setNotificationEnabled] = useState(true);
 
   const colorScheme = useColorScheme();
   const isDarkTheme = colorScheme === 'dark';
@@ -41,34 +42,46 @@ const NotifyScreen = (props) => {
       .filter((task) => new Date(task.deadline) <= twoDaysLater)
       .map((task) => {
         const reminderMessage = `Task: ${task.title}`;
-// const reminderMessage = `Task: ${task.title}
-// By ${task.assignedUser}`;
+        // const reminderMessage = `Task: ${task.title}
+        // By ${task.assignedUser}`;
         return { ...task, reminderMessage };
       });
   };
 
-  useEffect(() => {
-    console.log('Token in NotifyScreen:', props.route.params.token);
-    fetchTasks();
-  }, []);
-
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/send-data`, {
-        headers: {
-          Authorization: `Bearer ${props.route.params.token}`,
-        },
-      });
+      if (notificationEnabled) {
+        const response = await axios.get(`${BASE_URL}/send-data`, {
+          headers: {
+            Authorization: `Bearer ${props.route.params.token}`,
+          },
+        });
 
-      const tasks = response.data.assignedTasks.concat(response.data.userTasks);
-      const upcomingReminders = getUpcomingReminders(tasks);
+        const tasks = response.data.assignedTasks.concat(response.data.userTasks);
+        const upcomingReminders = getUpcomingReminders(tasks);
 
-      setTaskReminders(upcomingReminders);
+        setTaskReminders(upcomingReminders);
+      } else {
+        setTaskReminders([]);
+      }
+
       setLoading(false);
     } catch (err) {
       console.error(err);
       setError('Failed to fetch task reminders');
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    console.log('Token in NotifyScreen:', props.route.params.token);
+    fetchTasks();
+  }, [notificationEnabled, props.route.params.token]); 
+
+  const toggleNotification = () => {
+    setNotificationEnabled((prev) => !prev);
+    if (!notificationEnabled) {
+      fetchTasks();
     }
   };
 
@@ -86,26 +99,31 @@ const NotifyScreen = (props) => {
       {/* <Text style={styles.Header}>Notification</Text> */}
       {error ? (
         <Text style={styles.Error}>{error}</Text>
-      ) : taskReminders.length === 0 ? (
-        <View style={styles.NoRemindersImageContainer}>
-          <Image style={styles.NoRemindersImage} source={require('../../assets/no_reminders.png')} />
-        </View>
-      ) : (
-        taskReminders.map((task, index) => (
-          <TouchableOpacity key={index}>
-            <View style={[styles.textbox, dynamicStyles.Button]}>
-              <Image style={styles.Taskremindericon} source={require('../../assets/Reminder.png')} />
-              <View>
-                <Text style={styles.NotifyTitle}>{task.reminderMessage}</Text>
-                <Text style={styles.Timing}>{`Deadline: ${new Date(task.deadline).toLocaleString()}`}</Text>
+      ) : notificationEnabled ? (
+        taskReminders.length === 0 ? (
+          <View style={styles.NoRemindersImageContainer}>
+            <Image style={styles.NoRemindersImage} source={require('../../assets/no_reminders.png')} />
+          </View>
+        ) : (
+          taskReminders.map((task, index) => (
+            <TouchableOpacity key={index}>
+              <View style={[styles.textbox, dynamicStyles.Button]}>
+                <Image style={styles.Taskremindericon} source={require('../../assets/Reminder.png')} />
+                <View>
+                  <Text style={styles.NotifyTitle}>{task.reminderMessage}</Text>
+                  <Text style={styles.Timing}>{`Deadline: ${new Date(task.deadline).toLocaleString()}`}</Text>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        ))
+            </TouchableOpacity>
+          ))
+        )
+      ) : (
+        <Text style={styles.Error}>Notifications are turned off</Text>
       )}
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -147,7 +165,7 @@ const styles = StyleSheet.create({
     marginTop: height * 0.025,
     marginBottom: height * -0.02,
     width: width * 0.90,
-    height: height * 0.1,
+    height: height * 0.08,
     backgroundColor: '#FFFFFF',
     borderRadius: width * 0.02,
     borderWidth: 0.5,

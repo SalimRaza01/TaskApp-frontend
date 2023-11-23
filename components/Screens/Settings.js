@@ -10,12 +10,15 @@ export default function Settings() {
 
   const toggleSwitch = () => {
     setIsEnabled((previousState) => !previousState);
-
   };
+
   const toggleNotification = () => {
     setNotificationEnabled((prev) => !prev);
+    if (!notificationEnabled) {
+      fetchTasks();
+    }
   };
-
+  
   const colorScheme = useColorScheme();
   const isDarkTheme = colorScheme === 'dark';
 
@@ -71,7 +74,7 @@ export default function Settings() {
         </View>
       </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
