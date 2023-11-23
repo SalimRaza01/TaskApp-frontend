@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import DatePicker from 'react-native-modern-datepicker';
 import { Picker } from '@react-native-picker/picker';
+import { useColorScheme } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -24,11 +25,41 @@ const TaskModal = ({
   assignedUser,
   setAssignedUser,
 }) => {
+
+  const colorScheme = useColorScheme();
+  const isDarkTheme = colorScheme === 'dark';
+
+  const dynamicStyles = {
+    container: {
+      // flex: 1,
+      backgroundColor: isDarkTheme ? "#000" : '#f7f7f7',
+    },
+    input: {
+      color: isDarkTheme ? '#FFF' : '#000',
+      backgroundColor: isDarkTheme ? '#333' : '#FFF',
+      borderColor: isDarkTheme ? '#555' : '#ccc',
+    },
+    Textdark: {
+      color: isDarkTheme ? '#FFFFFF' : '#333',
+    },
+    descDark: {
+      color: isDarkTheme ? '#FFFFFF' : '#333',
+    },
+    dateDark: {
+      backgroundColor: isDarkTheme ? "#222" : '#fff',
+      shadowColor: isDarkTheme ? '#000' : '#ccc',
+    },
+    container: {
+      // flex: 1,
+      backgroundColor: isDarkTheme ? "#000" : '#f7f7f7',
+    },
+  }
+
   return (
     <Modal visible={modalVisible} animationType="slide" transparent={false}>
-      <ScrollView style={{ flex: 1 }}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.WelcomeText}>Create Task</Text>
+      <ScrollView style={[styles.scrollview, dynamicStyles.scrollDark]}>
+        <View style={[styles.modalContainer, dynamicStyles.container]}>
+          <Text style={[styles.WelcomeText, dynamicStyles.Textdark]}>Create Task</Text>
           <TextInput
             style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
             placeholderTextColor="#999"
@@ -72,7 +103,6 @@ const TaskModal = ({
             selected={task && task.deadline ? task.deadline : ''}
             onDateChange={date => setTask({ ...task, deadline: date })}
           />
-
           {validationError && (
             <Text style={styles.errorText}>
               Error: Please fill in the required fields
@@ -101,6 +131,9 @@ const TaskModal = ({
 export default TaskModal;
 
 const styles = StyleSheet.create({
+  scrollview:{
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: 20,

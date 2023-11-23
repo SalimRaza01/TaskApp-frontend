@@ -41,7 +41,13 @@ export default function Login() {
     },
     Text: {
       color: isDarkTheme ? '#FFFFFF' : '#000',
-    }
+    },
+    // input: {
+    //   color: isDarkTheme ? '#FFFFFF' : '#000',
+    //   backgroundColor: isDarkTheme ? '#444' : '#FFFFFF',
+    //   borderWidth: 0.5,
+    //   borderColor: isDarkTheme ? '#EEEEEE' : '#ccc',
+    // }
   };
 
   const navigation = useNavigation();
@@ -100,7 +106,7 @@ export default function Login() {
 
             <Text style={[styles.inputLabel, dynamicStyles.Text]}>Email</Text>
             <TextInput
-              style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
+              style={[styles.input]}
               placeholderTextColor="#999"
               placeholder="Email"
               value={email}
@@ -110,7 +116,7 @@ export default function Login() {
             <Text style={[styles.inputLabel, dynamicStyles.Text]}>Password</Text>
             <View style={styles.passwordInputContainer}>
               <TextInput
-                style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
+                style={[styles.input]}
                 placeholder="Password"
                 placeholderTextColor="#999"
                 value={password}
@@ -123,7 +129,7 @@ export default function Login() {
               >
                 <Image
                   source={showPassword ? require('../../assets/ShowPass.png') : require('../../assets/HidePass.png')}
-                  style={{ width: 20, height: 20, marginRight: width * 0.065 }}
+                  style={[{ width: 20, height: 20, marginRight: width * 0.065 }]}
                 />
               </TouchableOpacity>
             </View>
@@ -221,7 +227,9 @@ const styles = StyleSheet.create({
     marginBottom: height * 0.001,
     borderRadius: width * 0.02,
     fontSize: width * 0.03,
-    width: width * 0.8
+    width: width * 0.8,
+    color: '#000',
+    backgroundColor: '#fff'
   },
   button: {
     width: width * 0.5,
@@ -252,4 +260,9 @@ const styles = StyleSheet.create({
     marginTop: height * 0.007,
     marginLeft: width * 0.01,
   },
+  eyebutton: {
+    width: 20, 
+    height: 20, 
+    marginRight: width * 0.065
+  }
 })

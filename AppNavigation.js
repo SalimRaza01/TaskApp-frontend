@@ -26,14 +26,8 @@ const Drawer = createDrawerNavigator();
 const Tabs = ({ route, handleLogout, isDarkMode }) => {
   const [activeTab, setActiveTab] = useState('Home');
 
-  const [isEnabled, setIsEnabled] = useState(Appearance.getColorScheme() === 'dark');
-
-  const toggleSwitch = () => {
-    setIsEnabled((previousState) => !previousState);
-  };
-
   const colorScheme = useColorScheme();
-  const isDarkModeEnabled = isEnabled || Appearance.getColorScheme() === 'dark';
+  const isDarkTheme = colorScheme === 'dark';
 
   const dynamicStyles = {
     container: {

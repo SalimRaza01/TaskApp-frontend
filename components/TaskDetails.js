@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import axios from 'axios';
+import { useColorScheme } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -26,6 +27,31 @@ const TaskDetails = ({ route }) => {
   const { deadline, createdAt } = task;
   const [comments, setComments] = useState(task.comments || []);
   const [comment, setComment] = useState('');
+
+  const colorScheme = useColorScheme();
+  const isDarkTheme = colorScheme === 'dark';
+
+  const dynamicStyles = {
+    container: {
+      // flex: 1,
+      backgroundColor: isDarkTheme ? "#000" : '#f7f7f7',
+    },
+    input: {
+      color: isDarkTheme ? '#FFF' : '#000',
+      backgroundColor: isDarkTheme ? '#333' : '#FFF',
+      borderColor: isDarkTheme ? '#555' : '#ccc',
+    },
+    Textdark: {
+      color: isDarkTheme ? '#FFFFFF' : '#333',
+    },
+    descDark: {
+      color: isDarkTheme ? '#FFFFFF' : '#333',
+    },
+    dateDark: {
+      backgroundColor: isDarkTheme ? "#222" : '#fff',
+      shadowColor: isDarkTheme ? '#000' : '#ccc',
+    },
+  }
 
   useEffect(() => {
     console.log('Comments:', comments);
@@ -230,18 +256,18 @@ const TaskDetails = ({ route }) => {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, dynamicStyles.container]}
       behavior={Platform.OS === 'ios' ? 'padding' : null}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
       <ScrollView
-        contentContainerStyle={styles.scrollContainer}
+        contentContainerStyle={[styles.scrollContainer, dynamicStyles.container]}
         showsVerticalScrollIndicator={false}>
 
 
-        <View style={styles.container}>
-          <Text style={[styles.Tasktitle]}>Task: {task.title}</Text>
+        <View style={[styles.container, dynamicStyles.container]}>
+          <Text style={[styles.Tasktitle, dynamicStyles.Textdark]}>Task: {task.title}</Text>
 
-          <Text style={styles.Taskdecription}>Description: {task.description}</Text>
+          <Text style={[styles.Taskdecription, dynamicStyles.descDark]}>Description: {task.description}</Text>
 
           <View style={styles.divider} />
 
@@ -303,7 +329,7 @@ const TaskDetails = ({ route }) => {
           <TextInput
             style={[
               styles.input,
-              { color: '#000', backgroundColor: '#fff', ...styles.shadow },
+              { color: '#000', backgroundColor: '#fff', ...styles.shadow }, dynamicStyles.input
             ]}
             placeholderTextColor="#999"
             placeholder="  Comment"
