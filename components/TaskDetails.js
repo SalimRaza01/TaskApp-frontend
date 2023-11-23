@@ -27,6 +27,7 @@ const TaskDetails = ({ route }) => {
   const { deadline, createdAt } = task;
   const [comments, setComments] = useState(task.comments || []);
   const [comment, setComment] = useState('');
+  const [isTaskCompleted, setIsTaskCompleted] = useState(false);
 
   const colorScheme = useColorScheme();
   const isDarkTheme = colorScheme === 'dark';
@@ -118,7 +119,12 @@ const TaskDetails = ({ route }) => {
 
   const handleToggleCompletion = async (taskId) => {
     try {
-      const newStatus = task.status === 'Completed' ? 'Pending' : 'Completed';
+      if (task.status === 'Completed') {
+        console.log('Task is already completed. Skipping update.');
+        return;
+      }
+
+      const newStatus = 'Completed';
 
       setTask((prevTask) => {
         return { ...prevTask, status: newStatus };
@@ -139,6 +145,7 @@ const TaskDetails = ({ route }) => {
         console.log('Task status updated:', response.data);
 
         setTask((prevTask) => ({ ...prevTask, status: response.data.status }));
+        setIsTaskCompleted(response.data.status === 'Completed');
 
         if (route.params.handleUpdateTaskStatus) {
           route.params.handleUpdateTaskStatus(response.data);
@@ -282,6 +289,7 @@ const TaskDetails = ({ route }) => {
                 Priority: {task.priority}{' '}
               </Text>
             </View>
+
             <View style={styles.Deadlinebox}>
               <Text style={styles.DeadlineText}>
                 Deadline: {formatDeadline(task.deadline).formattedDeadline}
@@ -291,11 +299,14 @@ const TaskDetails = ({ route }) => {
             <TouchableOpacity
               style={[
                 styles.StatusBox,
-                task.status === 'Completed' && styles.completedButton,
+                isTaskCompleted ? styles.completedButton : styles.pendingButton,
+                isTaskCompleted && styles.disabledButton,
               ]}
-              onPress={() => handleToggleCompletion(task._id)}>
+              onPress={() => handleToggleCompletion(task._id)}
+              disabled={isTaskCompleted}
+            >
               <Text style={styles.buttonText}>
-                {task.status === 'Completed' ? 'Mark Pending' : 'Pending'}
+                {isTaskCompleted ? 'Task Completed' : 'Mark Completed'}
               </Text>
             </TouchableOpacity>
 
@@ -317,7 +328,6 @@ const TaskDetails = ({ route }) => {
             showsVerticalScrollIndicator={false}>
             {comments.map((comment, index) => (
               <View key={index} style={styles.commentBox}>
-                {/* {console.log('Comment:', comment)} */}
                 <Text style={styles.commentor}>
                   {comment.commenter ? comment.commenter.username || comment.commenter.email : 'Unknown User'}
                 </Text>
@@ -366,6 +376,14 @@ const styles = StyleSheet.create({
   completedButton: {
     backgroundColor: '#808080',
   },
+  pendingButton: {
+    backgroundColor: '#3498db', 
+  },
+
+  disabledButton: {
+    opacity: 0.5, 
+  },
+
   buttonText: {
     color: '#fff',
     fontSize: width * 0.035,

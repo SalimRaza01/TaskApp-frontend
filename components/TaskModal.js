@@ -49,10 +49,10 @@ const TaskModal = ({
       backgroundColor: isDarkTheme ? "#222" : '#fff',
       shadowColor: isDarkTheme ? '#000' : '#ccc',
     },
-    container: {
-      // flex: 1,
-      backgroundColor: isDarkTheme ? "#000" : '#f7f7f7',
-    },
+    // container: {
+    //   // flex: 1,
+    //   backgroundColor: isDarkTheme ? "#000" : '#f7f7f7',
+    // },
   }
 
   return (
