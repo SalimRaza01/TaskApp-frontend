@@ -1,11 +1,31 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useColorScheme } from 'react-native';
 
 
 const { width, height } = Dimensions.get('window');
 
 const DrawerContent = ({ navigation, route }) => {
+
+  const colorScheme = useColorScheme();
+  const isDarkTheme = colorScheme === 'dark';
+
+  const dynamicStyles = {
+    container: {
+      flex: 1,
+      backgroundColor: isDarkTheme ? "#000" : "#FFF",
+    },
+    Button: {
+      backgroundColor: isDarkTheme ? "#222" : "#FFF",
+    },
+    Black: {
+      color: "#FFFFFF",
+    },
+    Grey: {
+      color: "#DDDDDD",
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -22,41 +42,41 @@ const DrawerContent = ({ navigation, route }) => {
         <Image style={styles.UserProfileImage} source={require('../assets/profile.png')} />
       </TouchableOpacity>
 
-      <View style={styles.container2}>
+      <View style={[styles.container2, dynamicStyles.container]}>
 
-        <TouchableOpacity style={styles.addButton}
+        <TouchableOpacity style={[styles.addButton, dynamicStyles.Button]}
           onPress={() => {
             navigation.navigate('Tabs', { username: route.params.username });
           }}>
           <Image style={styles.DrawerBtn} source={require('../assets/DrawerHome.png')} />
-          <Text style={styles.addButtonText}>Home</Text>
+          <Text style={[styles.addButtonText, dynamicStyles.Black]}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton}
+        <TouchableOpacity style={[styles.addButton, dynamicStyles.Button]}
           onPress={() => {
             navigation.navigate('NotifyScreen');
           }}>
           <Image style={styles.DrawerBtn} source={require('../assets/DrawerNoti.png')} />
-          <Text style={styles.addButtonText}>Notificatioon</Text>
+          <Text style={[styles.addButtonText, dynamicStyles.Black]}>Notificatioon</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton}
+        <TouchableOpacity style={[styles.addButton, dynamicStyles.Button]}
           onPress={() => {
             navigation.navigate('Settings');
           }} >
           <Image style={styles.DrawerBtn} source={require('../assets/DrawerSetting.png')} />
-          <Text style={styles.addButtonText}>Settings</Text>
+          <Text style={[styles.addButtonText, dynamicStyles.Black]}>Settings</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.addButton}
+        <TouchableOpacity style={[styles.addButton, dynamicStyles.Button]}
           onPress={() => {
             navigation.navigate('Settings');
           }} >
           <Image style={styles.DrawerBtn} source={require('../assets/star.png')} />
-          <Text style={styles.addButtonText}>Rate us</Text>
+          <Text style={[styles.addButtonText, dynamicStyles.Black]}>Rate us</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleLogout} style={styles.LogoutButton}>
+        <TouchableOpacity onPress={handleLogout} style={[styles.LogoutButton, dynamicStyles.Button]}>
           <Image style={styles.LogoutIcon} source={require('../assets/DrawerLogout.png')} />
-          <Text style={styles.LogoutText}>Logout</Text>
+          <Text style={[styles.LogoutText, dynamicStyles.Black]}>Logout</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -75,11 +95,10 @@ const styles = StyleSheet.create({
   container2: {
     marginTop: height * 0.2,
     height: height * 1,
-    padding: 30,
+    padding: 22,
     backgroundColor: "#FFFFFF",
-    // borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-
+    alignSelf: 'center'
   },
   UserName: {
     fontSize: width * 0.06,
@@ -95,9 +114,8 @@ const styles = StyleSheet.create({
     paddingVertical: height * 0.015,
     borderRadius: width * 0.02,
     borderBottomColor: 'black',
-    // borderBottomWidth: width * 0.001,
     width: width * 0.6,
-    marginLeft: width * -0.0255,
+    // marginLeft: width * -0.0255,
     marginTop: height * 0.009,
     elevation: 50,
   },

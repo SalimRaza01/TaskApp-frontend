@@ -5,6 +5,7 @@ import TaskList from '../TaskList';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { useColorScheme } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,6 +28,26 @@ const HomeScreen = ({ route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [validationError, setValidationError] = useState(false);
   const [markedDates, setMarkedDates] = useState({});
+
+
+  const colorScheme = useColorScheme();
+  const isDarkTheme = colorScheme === 'dark';
+
+  const dynamicStyles = {
+    container: {
+      flex: 1,
+      backgroundColor: isDarkTheme ? "#000" : "#FFF",
+    },
+    input: {
+      color: isDarkTheme ? '#FFF' : '#000',
+      backgroundColor: isDarkTheme ? '#333' : '#FFF',
+      borderColor: isDarkTheme ? '#555' : '#ccc',
+    },
+    Text: {
+      color: "#FFFFFF",
+    }
+
+  };
 
   const BASE_URL = 'https://taskapp-service.onrender.com';
 
@@ -193,11 +214,11 @@ const HomeScreen = ({ route }) => {
   
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, dynamicStyles.container]}>
 
-      <Text style={styles.WelcomeText}>Welcome,</Text>
+      <Text style={[styles.WelcomeText, dynamicStyles.Text]}>Welcome,</Text>
 
-      <Text style={styles.UserName}>{username}</Text>
+      <Text style={[styles.UserName, dynamicStyles.Text]}>{username}</Text>
 
       <TouchableOpacity onPress={() => navigation.navigate('Profile')} >
         <Image style={styles.UserProfileImage} source={require('../../assets/profile.png')} />

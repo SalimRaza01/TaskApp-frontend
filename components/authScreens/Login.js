@@ -15,6 +15,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CheckBox from '@react-native-community/checkbox';
+import { useColorScheme } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -24,6 +25,24 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const colorScheme = useColorScheme();
+  const isDarkTheme = colorScheme === 'dark';
+
+  const dynamicStyles = {
+    container: {
+      flex: 1,
+      backgroundColor: isDarkTheme ? "#222" : "#FFF",
+    },
+    input: {
+      color: isDarkTheme ? '#FFF' : '#000',
+      backgroundColor: isDarkTheme ? '#333' : '#FFF',
+      borderColor: isDarkTheme ? '#555' : '#ccc',
+    },
+    Text: {
+      color: "#FFFFFF",
+    }
+  };
 
   const navigation = useNavigation();
 
@@ -62,53 +81,53 @@ export default function Login() {
 
   return (
     <KeyboardAvoidingView
-    style={styles.container}
-    behavior={Platform.OS === 'ios' ? 'padding' : null}
-    keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
-    <ScrollView
-      contentContainerStyle={styles.scrollContainer}
-      showsVerticalScrollIndicator={false}>
-    <View style={styles.container}>
-      <View>
-        <Image style={styles.LoginImage} source={require('../../assets/LoginImage.png')} />
-        <Text style={styles.AppName}>TaskApp</Text>
-        <Text style={styles.WelcomeText}>Welcome to</Text>
-      </View>
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}>
+        <View style={styles.container}>
+          <View>
+            <Image style={styles.LoginImage} source={require('../../assets/LoginImage.png')} />
+            <Text style={styles.AppName}>TaskApp</Text>
+            <Text style={styles.WelcomeText}>Welcome to</Text>
+          </View>
 
-      <View style={styles.LoginContainer}>
-        <Text style={styles.LoginText}>Login</Text>
-        <View style={styles.divider} />
+          <View style={[styles.LoginContainer, dynamicStyles.container]}>
+            <Text style={[styles.LoginText, dynamicStyles.Text]}>Login</Text>
+            <View style={styles.divider} />
 
-        <Text style={styles.inputLabel}>Email</Text>
-        <TextInput
-          style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
-          placeholderTextColor="#999"
-          placeholder="Email"
-          value={email}
-          onChangeText={text => setEmail(text)}
-        />
+            <Text style={[styles.inputLabel, dynamicStyles.Text]}>Email</Text>
+            <TextInput
+              style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
+              placeholderTextColor="#999"
+              placeholder="Email"
+              value={email}
+              onChangeText={text => setEmail(text)}
+            />
 
-        <Text style={styles.inputLabel}>Password</Text>
-        <View style={styles.passwordInputContainer}>
-        <TextInput
-          style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
-          placeholder="Password"
-          placeholderTextColor="#999"
-          value={password}
-          onChangeText={text => setPassword(text)}
-          secureTextEntry={!showPassword}
-        />
-         <TouchableOpacity
+            <Text style={[styles.inputLabel, dynamicStyles.Text]}>Password</Text>
+            <View style={styles.passwordInputContainer}>
+              <TextInput
+                style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
+                placeholder="Password"
+                placeholderTextColor="#999"
+                value={password}
+                onChangeText={text => setPassword(text)}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity
                 style={styles.eyeButton}
                 onPress={() => setShowPassword(!showPassword)}
               >
-              <Image
+                <Image
                   source={showPassword ? require('../../assets/ShowPass.png') : require('../../assets/HidePass.png')}
-                  style={{ width: 20, height: 20 }}
+                  style={{ width: 20, height: 20, marginRight: width * 0.065 }}
                 />
               </TouchableOpacity>
-              </View>
-        {/* <View style={styles.stayLoggedInContainer}>
+            </View>
+            {/* <View style={styles.stayLoggedInContainer}>
           <CheckBox style={styles.checkbox}
             value={stayLoggedIn}
             onValueChange={value => setStayLoggedIn(value)}
@@ -116,17 +135,17 @@ export default function Login() {
           <Text style={styles.stayLoggedInText}>Stay Logged In</Text>
         </View> */}
 
-        <View style={{ alignContent: "center", alignItems: "center" }}>
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: "#007BFF" }]}
-            onPress={handleLogin}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
+            <View style={{ alignContent: "center", alignItems: "center" }}>
+              <TouchableOpacity
+                style={[styles.button, { backgroundColor: "#007BFF" }]}
+                onPress={handleLogin}>
+                <Text style={styles.buttonText}>Login</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
-      </View>
-    </View>
-          </ScrollView>
-          </KeyboardAvoidingView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 

@@ -7,6 +7,7 @@ import {
   Dimensions,
   Modal,
   TextInput,
+  ScrollView
 } from 'react-native';
 import DatePicker from 'react-native-modern-datepicker';
 import { Picker } from '@react-native-picker/picker';
@@ -25,72 +26,74 @@ const TaskModal = ({
 }) => {
   return (
     <Modal visible={modalVisible} animationType="slide" transparent={false}>
-      <View style={styles.modalContainer}>
-        <Text style={styles.WelcomeText}>Create Task</Text>
-        <TextInput
-          style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
-          placeholderTextColor="#999"
-          placeholder="Title"
-          value={task && task.title ? task.title : ''}
-          onChangeText={text => setTask({ ...task, title: text })}
-        />
-        <TextInput
-          style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
-          placeholderTextColor="#999"
-          placeholder="Description"
-          value={task && task.description ? task.description : ''}
-          onChangeText={text =>
-            setTask({
-              ...task,
-              description: text,
-            })
-          }
-        />
+      <ScrollView style={{ flex: 1 }}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.WelcomeText}>Create Task</Text>
+          <TextInput
+            style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
+            placeholderTextColor="#999"
+            placeholder="Title"
+            value={task && task.title ? task.title : ''}
+            onChangeText={text => setTask({ ...task, title: text })}
+          />
+          <TextInput
+            style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
+            placeholderTextColor="#999"
+            placeholder="Description"
+            value={task && task.description ? task.description : ''}
+            onChangeText={text =>
+              setTask({
+                ...task,
+                description: text,
+              })
+            }
+          />
 
-        <TextInput
-          style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
-          placeholder="Assign Task to"
-          placeholderTextColor="#999"
-          value={assignedUser}
-          onChangeText={text => setAssignedUser(text)}
-        />
-        <Text style={styles.inputLabel}>Set Priority:</Text>
-        <Picker
-          selectedValue={task && task.priority ? task.priority : ''}
-          onValueChange={value => setTask({ ...task, priority: value })}>
-          <Picker.Item label="Select Priority" value="" />
-          <Picker.Item label="High" value="High" />
-          <Picker.Item label="Medium" value="Medium" />
-          <Picker.Item label="Low" value="Low" />
-        </Picker>
+          <TextInput
+            style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
+            placeholder="Assign Task to"
+            placeholderTextColor="#999"
+            value={assignedUser}
+            onChangeText={text => setAssignedUser(text)}
+          />
+          <Text style={styles.inputLabel}>Set Priority:</Text>
+          <Picker
+            selectedValue={task && task.priority ? task.priority : ''}
+            onValueChange={value => setTask({ ...task, priority: value })}>
+            <Picker.Item label="Select Priority" value="" />
+            <Picker.Item label="High" value="High" />
+            <Picker.Item label="Medium" value="Medium" />
+            <Picker.Item label="Low" value="Low" />
+          </Picker>
 
-        <Text style={styles.inputLabel}>Set Deadline:</Text>
-        <DatePicker
-          mode="datepicker"
-          selected={task && task.deadline ? task.deadline : ''}
-          onDateChange={date => setTask({ ...task, deadline: date })}
-        />
+          <Text style={styles.inputLabel}>Set Deadline:</Text>
+          <DatePicker
+            mode="datepicker"
+            selected={task && task.deadline ? task.deadline : ''}
+            onDateChange={date => setTask({ ...task, deadline: date })}
+          />
 
-        {validationError && (
-          <Text style={styles.errorText}>
-            Error: Please fill in the required fields
-          </Text>
-        )}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: '#007BFF' }]}
-            onPress={handleAddTask}>
-            <Text style={styles.buttonText}>
-              {task && task._id ? 'Update' : 'Add'}
+          {validationError && (
+            <Text style={styles.errorText}>
+              Error: Please fill in the required fields
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: '#FF3B30' }]}
-            onPress={handleCancel}>
-            <Text style={styles.buttonText}>Cancel</Text>
-          </TouchableOpacity>
+          )}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: '#007BFF' }]}
+              onPress={handleAddTask}>
+              <Text style={styles.buttonText}>
+                {task && task._id ? 'Update' : 'Add'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: '#FF3B30' }]}
+              onPress={handleCancel}>
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </Modal>
   );
 };

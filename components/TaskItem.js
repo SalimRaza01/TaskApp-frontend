@@ -7,12 +7,33 @@ import {
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useColorScheme } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
 const TaskItem = ({ task, response, openTaskDetails, token, username }) => {
 
   const navigation = useNavigation();
+
+  const colorScheme = useColorScheme();
+  const isDarkTheme = colorScheme === 'dark';
+
+  const dynamicStyles = {
+    container: {
+      flex: 1,
+      backgroundColor: isDarkTheme ? "#000" : "#FFF",
+    },
+    TaskItem: {
+      flex: 1,
+      backgroundColor: isDarkTheme ? "#222" : "#FFF",
+    },
+    Black: {
+      color: "#FFFFFF",
+    },
+    Grey: {
+      color: "#DDDDDD",
+    }
+  };
 
   const formatDeadline = deadline => {
     try {
@@ -65,7 +86,7 @@ const TaskItem = ({ task, response, openTaskDetails, token, username }) => {
     return description;
   };
   return (
-    <View style={styles.taskItem}>
+    <View style={[styles.taskItem, dynamicStyles.TaskItem]}>
       <View style={styles.taskTextContainer}>
         <View
           style={[
@@ -80,12 +101,12 @@ const TaskItem = ({ task, response, openTaskDetails, token, username }) => {
         <Text
           style={[
             styles.taskText,
-            task.status === 'Completed' && styles.completedTaskText,
+            task.status === 'Completed' && styles.completedTaskText, dynamicStyles.Black
           ]}
         >
           {task.title}
         </Text>
-        <Text style={styles.taskDescription}>
+        <Text style={[styles.taskDescription, dynamicStyles.Grey]}>
           Description:  {trimDescription(task.description, 20)}
         </Text>
         {/* <Text style={styles.taskStatus}>Status: {task.status}</Text> */}
