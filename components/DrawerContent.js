@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image } from 'rea
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColorScheme } from 'react-native';
 
-
 const { width, height } = Dimensions.get('window');
 
 const DrawerContent = ({ navigation, route }) => {
@@ -20,10 +19,10 @@ const DrawerContent = ({ navigation, route }) => {
       backgroundColor: isDarkTheme ? "#222" : "#FFF",
     },
     Black: {
-      color: "#FFFFFF",
+      color: isDarkTheme ? "#FFFFFF" : "#007BFF",
     },
     Grey: {
-      color: "#DDDDDD",
+      color: isDarkTheme ? "#DDDDDD" : "#007BFF",
     }
   };
 
@@ -115,7 +114,6 @@ const styles = StyleSheet.create({
     borderRadius: width * 0.02,
     borderBottomColor: 'black',
     width: width * 0.6,
-    // marginLeft: width * -0.0255,
     marginTop: height * 0.009,
     elevation: 50,
   },
@@ -161,13 +159,11 @@ const styles = StyleSheet.create({
   },
   LogoutText: {
     marginLeft: width * 0.03,
-    // marginTop: height * -0.028,
     color: "#007BFF",
   },
   LogoutIcon: {
     width: width * 0.05,
     height: width * 0.05,
-    // marginTop: height * -0.02,
     marginLeft: width * 0.04,
   },
   DrawerBtn: {

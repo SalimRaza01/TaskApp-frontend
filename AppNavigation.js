@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, View, TouchableOpacity, Image,  } from 'react-native';
+import { Dimensions, StyleSheet, View, TouchableOpacity, Image, } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -23,9 +23,27 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
-const Tabs = ({ route, handleLogout }) => {
+const Tabs = ({ route, handleLogout, isDarkMode }) => {
   const [activeTab, setActiveTab] = useState('Home');
 
+  const colorScheme = useColorScheme();
+  const isDarkTheme = colorScheme === 'dark';
+
+  const dynamicStyles = {
+    container: {
+      flex: 1,
+      backgroundColor: isDarkTheme ? "#222" : "#FFF",
+    },
+    input: {
+      color: isDarkTheme ? '#FFF' : '#000',
+      backgroundColor: isDarkTheme ? '#333' : '#FFF',
+      borderColor: isDarkTheme ? '#555' : '#ccc',
+    },
+    Text: {
+      color: "#FFFFFF",
+    }
+  };
+  
   return (
     <Tab.Navigator
       screenOptions={{
@@ -37,7 +55,7 @@ const Tabs = ({ route, handleLogout }) => {
           left: 20,
           right: 20,
           elevation: 0,
-          backgroundColor: '#FFFFFF',
+          backgroundColor: isDarkTheme ? '#333' : '#FFFFFF',
           borderRadius: 15,
           height: 75,
           ...styles.shadow,
@@ -45,7 +63,7 @@ const Tabs = ({ route, handleLogout }) => {
       }}
       tabBarOptions={{
         activeTintColor: 'rgb(0, 123, 255)',
-        inactiveTintColor: 'black',
+        inactiveTintColor: isDarkTheme ? '#FFFFFF' : 'black',
       }}
       tabBarLabelStyle={{ display: 'none' }}
       screenListeners={({ route }) => ({
@@ -62,8 +80,10 @@ const Tabs = ({ route, handleLogout }) => {
           email: route.params.email,
           token: route.params?.token,
           handleLogout: handleLogout,
+          isDarkTheme
         }}
         options={{
+          backgroundColor: isDarkTheme ? '#333' : '#FFFFFF',
           tabBarIcon: ({ focused }) => (
             <View>
               <Image
@@ -139,12 +159,12 @@ const Tabs = ({ route, handleLogout }) => {
   );
 };
 
-const DrawerNavigator = ({ route, navigation }) => {
+const DrawerNavigator = ({ route, navigation, isDarkTheme}) => {
   const { handleLogout } = route.params;
 
   return (
     <Drawer.Navigator
-      drawerContent={(props) => <DrawerContent {...props} handleLogout={handleLogout} route={route} />}
+   isDarkTheme={isDarkTheme} drawerContent={(props) => <DrawerContent {...props} handleLogout={handleLogout} route={route} />}
     >
       <Drawer.Screen
         name="AGVA"
@@ -156,11 +176,7 @@ const DrawerNavigator = ({ route, navigation }) => {
           handleLogout: handleLogout,
         }}
         options={{
-          headerCenter: () => (
-            <View>
-              <Image style={styles.logo} source={require('./assets/AgVa.png')} />
-            </View>
-          ),
+          backgroundColor: isDarkTheme ? '#333' : '#FFFFFF',
           headerTitle: 'AgVa',
           headerTitleAlign: 'center',
           headerTitleStyle: {
@@ -188,35 +204,32 @@ const DrawerNavigator = ({ route, navigation }) => {
               <Image style={styles.logo} source={require('./assets/AgVa.png')} />
             </View>
           ),
+          backgroundColor: isDarkTheme ? '#333' : '#FFFFFF',
           headerTitle: 'Notification',
           headerTitleAlign: 'center',
           headerTitleStyle: {
             fontSize: 25,
             color: '#cb297b',
           },
-          
+
         }}
       />
-        <Drawer.Screen
+      <Drawer.Screen
         name="Settings"
         component={Settings}
         initialParams={{ username: route.params.username, email: route.params.email, token: route.params?.token }}
         options={{
-          headerCenter: () => (
-            <View>
-              <Image style={styles.logo} source={require('./assets/AgVa.png')} />
-            </View>
-          ),
+          backgroundColor: isDarkTheme ? '#333' : '#FFFFFF',
           headerTitle: 'Settings',
           headerTitleAlign: 'center',
           headerTitleStyle: {
             fontSize: 25,
             color: '#cb297b',
           },
-          
+
         }}
       />
-     <Drawer.Screen
+      <Drawer.Screen
         name="Tabs"
         component={Tabs}
         initialParams={{
@@ -226,11 +239,8 @@ const DrawerNavigator = ({ route, navigation }) => {
           handleLogout: handleLogout,
         }}
         options={{
-          headerCenter: () => (
-            <View>
-              <Image style={styles.logo} source={require('./assets/AgVa.png')} />
-            </View>
-          ),
+    
+          backgroundColor: isDarkTheme ? '#333' : '#FFFFFF',
           headerTitle: 'AgVa',
           headerTitleAlign: 'center',
           headerTitleStyle: {
@@ -301,7 +311,7 @@ const StackNavigator = () => {
       <Stack.Screen options={{ headerShown: false }} name="Login" component={Login} />
       <Stack.Screen options={{ headerShown: false }} name="Tabs" component={Tabs} />
       <Stack.Screen name="Profile" component={Profile} />
-      <Stack.Screen name="DrawerContent" component={DrawerContent}  />
+      <Stack.Screen name="DrawerContent" component={DrawerContent} />
       <Stack.Screen options={{ headerShown: false }} name="NotifyScreen" component={NotifyScreen} />
       <Stack.Screen options={{ headerShown: false }} name="HomeScreen" component={HomeScreen} />
       <Stack.Screen

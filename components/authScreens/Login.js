@@ -71,7 +71,7 @@ export default function Login() {
           }
 
           console.log('Login successful. Welcome, ' + user.username, user.email, token);
-          navigation.navigate('Drawer', { username: user.username, email: user.email, token });
+          navigation.navigate('Drawer', { username: user.username, email: user.email, token, isDarkTheme });
         }
       }
     } catch (error) {

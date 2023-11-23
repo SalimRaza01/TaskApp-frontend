@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image } from 'react-native';
 import axios from 'axios';
+import { useColorScheme } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -8,6 +9,26 @@ const NotifyScreen = (props) => {
   const [taskReminders, setTaskReminders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const colorScheme = useColorScheme();
+  const isDarkTheme = colorScheme === 'dark';
+
+  const dynamicStyles = {
+    container: {
+      flex: 1,
+      backgroundColor: isDarkTheme ? "#000" : "#FFF",
+    },
+    Button: {
+      backgroundColor: isDarkTheme ? "#222" : "#FFF",
+      borderColor: isDarkTheme ? "#222" : "#ccc",
+    },
+    Black: {
+      color: isDarkTheme ? "#FFFFFF" : "#007BFF",
+    },
+    Grey: {
+      color: isDarkTheme ? "#DDDDDD" : "#007BFF",
+    }
+  };
 
   const BASE_URL = 'https://taskapp-service.onrender.com';
 
@@ -19,8 +40,9 @@ const NotifyScreen = (props) => {
     return tasks
       .filter((task) => new Date(task.deadline) <= twoDaysLater)
       .map((task) => {
-        const reminderMessage = `Task: ${task.title}
-By ${task.assignedUser}`;
+        const reminderMessage = `Task: ${task.title}`;
+// const reminderMessage = `Task: ${task.title}
+// By ${task.assignedUser}`;
         return { ...task, reminderMessage };
       });
   };
@@ -60,7 +82,7 @@ By ${task.assignedUser}`;
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, dynamicStyles.container]}>
       {/* <Text style={styles.Header}>Notification</Text> */}
       {error ? (
         <Text style={styles.Error}>{error}</Text>
@@ -71,7 +93,7 @@ By ${task.assignedUser}`;
       ) : (
         taskReminders.map((task, index) => (
           <TouchableOpacity key={index}>
-            <View style={styles.textbox}>
+            <View style={[styles.textbox, dynamicStyles.Button]}>
               <Image style={styles.Taskremindericon} source={require('../../assets/Reminder.png')} />
               <View>
                 <Text style={styles.NotifyTitle}>{task.reminderMessage}</Text>

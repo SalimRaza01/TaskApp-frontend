@@ -44,9 +44,8 @@ const HomeScreen = ({ route }) => {
       borderColor: isDarkTheme ? '#555' : '#ccc',
     },
     Text: {
-      color: "#FFFFFF",
+      color: isDarkTheme ? '#FFFFFF' : '#333'
     }
-
   };
 
   const BASE_URL = 'https://taskapp-service.onrender.com';
@@ -233,7 +232,7 @@ const HomeScreen = ({ route }) => {
 
         {tasks.length === 0 ? (
           <Image
-            source={require('../../assets/NoTask.png')}
+            source={require('../../assets/NoTaskDark.png')}
             style={styles.noTasksImage} />
         ) : (
           <TaskList
