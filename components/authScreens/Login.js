@@ -40,7 +40,7 @@ export default function Login() {
       borderColor: isDarkTheme ? '#555' : '#ccc',
     },
     Text: {
-      color: "#FFFFFF",
+      color: isDarkTheme ? '#FFFFFF' : '#000',
     }
   };
 

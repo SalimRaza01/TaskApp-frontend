@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { useColorScheme } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -18,6 +19,25 @@ export default function Profile({ route }) {
   const { username, email } = route.params;
 
   const [profileImage, setProfileImage] = useState(null);
+
+  const colorScheme = useColorScheme();
+  const isDarkTheme = colorScheme === 'dark';
+
+  const dynamicStyles = {
+    container: {
+      flex: 1,
+      backgroundColor: isDarkTheme ? "#000" : "#FFF",
+    },
+    Button: {
+      backgroundColor: isDarkTheme ? "#222" : "#FFF",
+    },
+    Text: {
+      color: isDarkTheme ? "#FFFFFF" : "#007BFF",
+    },
+    Grey: {
+      color: isDarkTheme ? "#DDDDDD" : "#007BFF",
+    }
+  };
 
   useEffect(() => {
     checkPermissions();
@@ -68,16 +88,16 @@ export default function Profile({ route }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, dynamicStyles.container]}>
 
-      <View style={styles.ProfileContainer}>
+      <View style={[styles.ProfileContainer, dynamicStyles.Button]}>
         <Image style={styles.profileImage} source={require('../../assets/profile.png')} />
         <TouchableOpacity onPress={() => selectImage()}>
           <Image style={styles.UpdateImage} source={require('../../assets/addImage.png')} />
         </TouchableOpacity>
-        <Text style={styles.UserName}>{username}</Text>
+        <Text style={[styles.UserName, dynamicStyles.Text]}>{username}</Text>
 
-        <Text style={styles.UserEmail}>{email}</Text>
+        <Text style={[styles.UserEmail, dynamicStyles.Grey]}>{email}</Text>
 
         <TouchableOpacity style={styles.updateButton} onPress={() => handleUpdateProfile()}>
           <Text style={styles.updateButtonText}  >Update Profile</Text>
