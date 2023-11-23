@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, View, TouchableOpacity, Image, } from 'react-native';
+import { Dimensions, StyleSheet, View, TouchableOpacity, Image, Appearance } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -26,8 +26,14 @@ const Drawer = createDrawerNavigator();
 const Tabs = ({ route, handleLogout, isDarkMode }) => {
   const [activeTab, setActiveTab] = useState('Home');
 
+  const [isEnabled, setIsEnabled] = useState(Appearance.getColorScheme() === 'dark');
+
+  const toggleSwitch = () => {
+    setIsEnabled((previousState) => !previousState);
+  };
+
   const colorScheme = useColorScheme();
-  const isDarkTheme = colorScheme === 'dark';
+  const isDarkModeEnabled = isEnabled || Appearance.getColorScheme() === 'dark';
 
   const dynamicStyles = {
     container: {
@@ -61,10 +67,6 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
           ...styles.shadow,
         },
       }}
-      // tabBarOptions={{
-      //   activeTintColor: 'rgb(0, 123, 255)',
-      //   inactiveTintColor: isDarkTheme ? '#FFFFFF' : 'black',
-      // }}
       tabBarLabelStyle={{ display: 'none' }}
       screenListeners={({ route }) => ({
         tabPress: (e) => {

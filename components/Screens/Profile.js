@@ -32,10 +32,15 @@ export default function Profile({ route }) {
       backgroundColor: isDarkTheme ? "#222" : "#FFF",
     },
     Text: {
-      color: isDarkTheme ? "#FFFFFF" : "#007BFF",
+      color: isDarkTheme ? "#FFFFFF" : "#000000",
     },
     Grey: {
-      color: isDarkTheme ? "#DDDDDD" : "#007BFF",
+      color: isDarkTheme ? "#DDDDDD" : "#333",
+    },
+    profileBorder:{
+      borderColor: isDarkTheme ? "white" : "#222",
+      borderWidth: width * 0.002,
+      borderRadius: width * 1,
     }
   };
 
@@ -91,7 +96,7 @@ export default function Profile({ route }) {
     <View style={[styles.container, dynamicStyles.container]}>
 
       <View style={[styles.ProfileContainer, dynamicStyles.Button]}>
-        <Image style={styles.profileImage} source={require('../../assets/profile.png')} />
+        <Image style={[styles.profileImage, dynamicStyles.profileBorder]} source={require('../../assets/profile.png')} />
         <TouchableOpacity onPress={() => selectImage()}>
           <Image style={styles.UpdateImage} source={require('../../assets/addImage.png')} />
         </TouchableOpacity>
@@ -129,6 +134,9 @@ const styles = StyleSheet.create({
     width: width * 0.35,
     height: width * 0.35,
     marginTop: height * 0.001,
+    borderColor: "white",
+    borderWidth: width * 0.002,
+    borderRadius: width * 1,
   },
 
   UpdateImage: {
