@@ -23,6 +23,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigation = useNavigation();
 
@@ -88,14 +89,25 @@ export default function Login() {
         />
 
         <Text style={styles.inputLabel}>Password</Text>
+        <View style={styles.passwordInputContainer}>
         <TextInput
           style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
           placeholder="Password"
           placeholderTextColor="#999"
           value={password}
           onChangeText={text => setPassword(text)}
-          secureTextEntry
+          secureTextEntry={!showPassword}
         />
+         <TouchableOpacity
+                style={styles.eyeButton}
+                onPress={() => setShowPassword(!showPassword)}
+              >
+              <Image
+                  source={showPassword ? require('../../assets/ShowPass.png') : require('../../assets/HidePass.png')}
+                  style={{ width: 20, height: 20 }}
+                />
+              </TouchableOpacity>
+              </View>
         {/* <View style={styles.stayLoggedInContainer}>
           <CheckBox style={styles.checkbox}
             value={stayLoggedIn}
@@ -119,6 +131,14 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
+  passwordInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 10,
+  },
   scrollContainer: {
     flexGrow: 1,
   },
