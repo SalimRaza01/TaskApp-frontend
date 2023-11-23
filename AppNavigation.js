@@ -40,10 +40,10 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
       borderColor: isDarkTheme ? '#555' : '#ccc',
     },
     Text: {
-      color: "#FFFFFF",
+      color: isDarkTheme ? "#FFFFFF" : 'black',
     }
   };
-  
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -61,10 +61,10 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
           ...styles.shadow,
         },
       }}
-      tabBarOptions={{
-        activeTintColor: 'rgb(0, 123, 255)',
-        inactiveTintColor: isDarkTheme ? '#FFFFFF' : 'black',
-      }}
+      // tabBarOptions={{
+      //   activeTintColor: 'rgb(0, 123, 255)',
+      //   inactiveTintColor: isDarkTheme ? '#FFFFFF' : 'black',
+      // }}
       tabBarLabelStyle={{ display: 'none' }}
       screenListeners={({ route }) => ({
         tabPress: (e) => {
@@ -80,7 +80,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
           email: route.params.email,
           token: route.params?.token,
           handleLogout: handleLogout,
-          isDarkTheme
+          isDarkTheme,
         }}
         options={{
           backgroundColor: isDarkTheme ? '#333' : '#FFFFFF',
@@ -90,7 +90,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
                 style={{
                   width: width * 0.06,
                   height: width * 0.06,
-                  tintColor: focused ? 'rgb(0, 123, 255)' : 'black',
+                  tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
                 }}
                 source={require('./assets/Home.png')}
               />
@@ -109,7 +109,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
                 style={{
                   width: width * 0.06,
                   height: width * 0.06,
-                  tintColor: focused ? 'rgb(0, 123, 255)' : 'black',
+                   tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
                 }}
                 source={require('./assets/ProfileIcon.png')}
               />
@@ -127,7 +127,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
                 style={{
                   width: width * 0.06,
                   height: width * 0.06,
-                  tintColor: focused ? 'rgb(0, 123, 255)' : 'black',
+                   tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
                 }}
                 source={require('./assets/Setting.png')}
               />
@@ -147,7 +147,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
                 style={{
                   width: width * 0.06,
                   height: width * 0.06,
-                  tintColor: focused ? 'rgb(0, 123, 255)' : 'black',
+                   tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
                 }}
                 source={require('./assets/bellIcon.png')}
               />
@@ -159,12 +159,12 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
   );
 };
 
-const DrawerNavigator = ({ route, navigation, isDarkTheme}) => {
+const DrawerNavigator = ({ route, navigation, isDarkTheme }) => {
   const { handleLogout } = route.params;
 
   return (
     <Drawer.Navigator
-   isDarkTheme={isDarkTheme} drawerContent={(props) => <DrawerContent {...props} handleLogout={handleLogout} route={route} />}
+      isDarkTheme={isDarkTheme} drawerContent={(props) => <DrawerContent {...props} handleLogout={handleLogout} route={route} />}
     >
       <Drawer.Screen
         name="AGVA"
@@ -239,7 +239,7 @@ const DrawerNavigator = ({ route, navigation, isDarkTheme}) => {
           handleLogout: handleLogout,
         }}
         options={{
-    
+
           backgroundColor: isDarkTheme ? '#333' : '#FFFFFF',
           headerTitle: 'AgVa',
           headerTitleAlign: 'center',
