@@ -41,10 +41,11 @@ const NotifyScreen = (props) => {
     return tasks
       .filter((task) => new Date(task.deadline) <= twoDaysLater)
       .map((task) => {
+        const isExpired = new Date(task.deadline) < now;
         const reminderMessage = `Task: ${task.title}`;
         // const reminderMessage = `Task: ${task.title}
         // By ${task.assignedUser}`;
-        return { ...task, reminderMessage };
+        return { ...task, reminderMessage, isExpired };
       });
   };
 
@@ -76,7 +77,7 @@ const NotifyScreen = (props) => {
   useEffect(() => {
     console.log('Token in NotifyScreen:', props.route.params.token);
     fetchTasks();
-  }, [notificationEnabled, props.route.params.token]); 
+  }, [notificationEnabled, props.route.params.token]);
 
   const toggleNotification = () => {
     setNotificationEnabled((prev) => !prev);
@@ -96,7 +97,7 @@ const NotifyScreen = (props) => {
 
   return (
     <View style={[styles.container, dynamicStyles.container]}>
-      {/* <Text style={styles.Header}>Notification</Text> */}
+      <Text style={styles.Header}>Notification</Text>
       {error ? (
         <Text style={styles.Error}>{error}</Text>
       ) : notificationEnabled ? (
@@ -105,17 +106,35 @@ const NotifyScreen = (props) => {
             <Image style={styles.NoRemindersImage} source={require('../../assets/no_reminders.png')} />
           </View>
         ) : (
-          taskReminders.map((task, index) => (
-            <TouchableOpacity key={index}>
-              <View style={[styles.textbox, dynamicStyles.Button]}>
-                <Image style={styles.Taskremindericon} source={require('../../assets/Reminder.png')} />
-                <View>
-                  <Text style={styles.NotifyTitle}>{task.reminderMessage}</Text>
-                  <Text style={styles.Timing}>{`Deadline: ${new Date(task.deadline).toLocaleString()}`}</Text>
+          (() => {
+            const now = new Date();
+            const upcomingTasks = [];
+            const expiredTasks = [];
+
+            taskReminders.forEach((task) => {
+              const isExpired = new Date(task.deadline) < now;
+
+              if (isExpired) {
+                expiredTasks.push(task);
+              } else {
+                upcomingTasks.push(task);
+              }
+            });
+
+            const allTasks = upcomingTasks.concat(expiredTasks);
+
+            return allTasks.map((task, index) => (
+              <TouchableOpacity key={index}>
+                <View style={[styles.textbox, dynamicStyles.Button, task.isExpired && { opacity: 0.5 }]}>
+                  <Image style={styles.Taskremindericon} source={require('../../assets/Reminder.png')} />
+                  <View>
+                    <Text style={[styles.NotifyTitle]}>{task.reminderMessage}</Text>
+                    <Text style={styles.Timing}>{`Deadline: ${new Date(task.deadline).toLocaleString()}`}</Text>
+                  </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          ))
+              </TouchableOpacity>
+            ));
+          })()
         )
       ) : (
         <Text style={styles.Error}>Notifications are turned off</Text>
@@ -123,7 +142,6 @@ const NotifyScreen = (props) => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

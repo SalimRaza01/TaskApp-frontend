@@ -10,6 +10,7 @@ import {
   ScrollView,
   Platform,
   KeyboardAvoidingView,
+  Alert
 } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import axios from 'axios';
@@ -120,37 +121,55 @@ const TaskDetails = ({ route }) => {
   const handleToggleCompletion = async (taskId) => {
     try {
       if (task.status === 'Completed') {
-        console.log('Task is already completed. Skipping update.');
+        Alert.alert(
+          'Task Completed',
+          'This task is already completed. You cannot change its status.',
+        );
         return;
       }
 
-      const newStatus = 'Completed';
-
-      setTask((prevTask) => {
-        return { ...prevTask, status: newStatus };
-      });
-
-      setTimeout(async () => {
-        const response = await axios.put(
-          `${BASE_URL}/update/${taskId}`,
-          { status: newStatus },
+      Alert.alert(
+        'Confirm Completion',
+        'Are you sure you want to mark this task as completed?',
+        [
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Mark Completed',
+            onPress: async () => {
+              const newStatus = 'Completed';
+
+              setTask((prevTask) => ({ ...prevTask, status: newStatus }));
+
+              try {
+                const response = await axios.put(
+                  `${BASE_URL}/update/${taskId}`,
+                  { status: newStatus },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      'Content-Type': 'application/json',
+                    },
+                  }
+                );
+
+                console.log('Task status updated:', response.data);
+
+                setTask((prevTask) => ({ ...prevTask, status: response.data.status }));
+                setIsTaskCompleted(response.data.status === 'Completed');
+
+                if (route.params.handleUpdateTaskStatus) {
+                  route.params.handleUpdateTaskStatus(response.data);
+                }
+              } catch (error) {
+                console.error('Error updating task status:', error);
+              }
             },
-          }
-        );
-
-        console.log('Task status updated:', response.data);
-
-        setTask((prevTask) => ({ ...prevTask, status: response.data.status }));
-        setIsTaskCompleted(response.data.status === 'Completed');
-
-        if (route.params.handleUpdateTaskStatus) {
-          route.params.handleUpdateTaskStatus(response.data);
-        }
-      }, 0);
+          },
+        ],
+      );
     } catch (error) {
       console.error('Error updating task status:', error);
     }
@@ -377,11 +396,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#808080',
   },
   pendingButton: {
-    backgroundColor: '#3498db', 
+    backgroundColor: '#3498db',
   },
 
   disabledButton: {
-    opacity: 0.5, 
+    opacity: 0.5,
   },
 
   buttonText: {
