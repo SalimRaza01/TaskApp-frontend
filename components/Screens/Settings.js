@@ -6,11 +6,15 @@ const { width, height } = Dimensions.get('window');
 
 export default function Settings() {
   const [isEnabled, setIsEnabled] = useState(Appearance.getColorScheme() === 'dark');
+  const [isEnabled2, setIsEnabled2] = useState(Appearance.getColorScheme() === 'dark');
   // const [notificationEnabled, setNotificationEnabled] = useState(true);
 
-  // const toggleSwitch = () => {
-  //   setIsEnabled((previousState) => !previousState);
-  // };
+  const toggleSwitch = () => {
+    setIsEnabled((previousState) => !previousState);
+  };
+  const toggleSwitch2 = () => {
+    setIsEnabled2((previousState) => !previousState);
+  };
 
   // const toggleNotification = () => {
   //   setNotificationEnabled((prev) => !prev);
@@ -54,12 +58,13 @@ export default function Settings() {
             trackColor={{ false: '#767577', true: '#007BFF' }}
             thumbColor={isEnabled ? '#ccc' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
-            // onValueChange={toggleNotification}
-            // value={notificationEnabled}
+            onValueChange={toggleSwitch2}
+            value={isEnabled2}
           />
         </View>
-        <View style={[styles.button]}>
+        <View style={[styles.button, {flexDirection:'row'}]}>
           <Text style={styles.buttonText}>Language</Text>
+          <Text style={styles.LanguageText}>English</Text>
         </View>
         <View style={[styles.button]}>
           <Text style={styles.buttonText}>Dark Mode</Text>
@@ -68,8 +73,8 @@ export default function Settings() {
             trackColor={{ false: '#767577', true: '#007BFF' }}
             thumbColor={isEnabled ? '#ccc' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
-            // onValueChange={toggleSwitch}
-            // value={isEnabled}
+            onValueChange={toggleSwitch}
+            value={isEnabled}
           />
         </View>
       </View>
@@ -110,5 +115,11 @@ const styles = StyleSheet.create({
   },
   SwitchButton: {
     marginTop: height * -0.03,
+  },
+  LanguageText: {
+    color: '#333',
+    fontSize: width * 0.035,
+    marginTop: height * 0.008,
+   marginLeft: width * 0.4,
   },
 })
