@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   ScrollView,
   Platform,
   KeyboardAvoidingView,
-  Alert
+  Alert,
 } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import axios from 'axios';
@@ -18,7 +18,8 @@ import { useColorScheme } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
-const TaskDetails = ({ route }) => {
+const TaskDetails = ({ route, navigation }) => {
+  
   const BASE_URL = 'https://taskapp-service.onrender.com';
 
   const [highlightedDates, setHighlightedDates] = useState({});
@@ -55,8 +56,7 @@ const TaskDetails = ({ route }) => {
   }
 
   useEffect(() => {
-    console.log('Comments:', comments);
-    setComments(task.comments || []);
+    setComments(route.params.task.comments || []);
 
     const updatedHighlightedDates = {};
     let currentDate = new Date(task.createdAt);
@@ -79,7 +79,7 @@ const TaskDetails = ({ route }) => {
     }
 
     setHighlightedDates(updatedHighlightedDates);
-  }, [task.comments, task.createdAt, task.deadline]);
+  }, [route.params.task.comments, task.createdAt, task.deadline]);
 
   useEffect(() => {
     setComments(task.comments || []);
@@ -278,17 +278,16 @@ const TaskDetails = ({ route }) => {
 
     return null;
   };
-
   return (
     <KeyboardAvoidingView
       style={[styles.container, dynamicStyles.container]}
       behavior={Platform.OS === 'ios' ? 'padding' : null}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+    >
       <ScrollView
         contentContainerStyle={[styles.scrollContainer, dynamicStyles.container]}
-        showsVerticalScrollIndicator={false}>
-
-
+        showsVerticalScrollIndicator={false}
+      >
         <View style={[styles.container, dynamicStyles.container]}>
           <Text style={[styles.Tasktitle, dynamicStyles.Textdark]}>Task: {task.title}</Text>
 
@@ -343,10 +342,16 @@ const TaskDetails = ({ route }) => {
 
           <ScrollView
             style={styles.commentContainer}
-            showsVerticalScrollIndicator={false}>
+            showsVerticalScrollIndicator={false}
+          >
             {comments.map((comment, index) => (
-              <View key={index} style={styles.commentBox}>
-                {console.log('Comment:', comment)}
+              <View
+                key={index}
+                style={[
+                  styles.commentBox,
+                  { alignSelf: comment.username === route.params.username ? 'flex-end' : 'flex-start' },
+                ]}
+              >
                 <Text style={styles.commentor}>{comment.username}</Text>
                 <Text style={styles.commentText}>{comment.message}</Text>
               </View>

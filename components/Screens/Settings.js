@@ -6,18 +6,18 @@ const { width, height } = Dimensions.get('window');
 
 export default function Settings() {
   const [isEnabled, setIsEnabled] = useState(Appearance.getColorScheme() === 'dark');
-  const [notificationEnabled, setNotificationEnabled] = useState(true);
+  // const [notificationEnabled, setNotificationEnabled] = useState(true);
 
-  const toggleSwitch = () => {
-    setIsEnabled((previousState) => !previousState);
-  };
+  // const toggleSwitch = () => {
+  //   setIsEnabled((previousState) => !previousState);
+  // };
 
-  const toggleNotification = () => {
-    setNotificationEnabled((prev) => !prev);
-    if (!notificationEnabled) {
-      fetchTasks();
-    }
-  };
+  // const toggleNotification = () => {
+  //   setNotificationEnabled((prev) => !prev);
+  //   if (!notificationEnabled) {
+  //     fetchTasks();
+  //   }
+  // };
   
   const colorScheme = useColorScheme();
   const isDarkTheme = colorScheme === 'dark';
@@ -54,8 +54,8 @@ export default function Settings() {
             trackColor={{ false: '#767577', true: '#007BFF' }}
             thumbColor={isEnabled ? '#ccc' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleNotification}
-            value={notificationEnabled}
+            // onValueChange={toggleNotification}
+            // value={notificationEnabled}
           />
         </View>
         <View style={[styles.button]}>
@@ -68,8 +68,8 @@ export default function Settings() {
             trackColor={{ false: '#767577', true: '#007BFF' }}
             thumbColor={isEnabled ? '#ccc' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
+            // onValueChange={toggleSwitch}
+            // value={isEnabled}
           />
         </View>
       </View>

@@ -43,8 +43,6 @@ const NotifyScreen = (props) => {
       .map((task) => {
         const isExpired = new Date(task.deadline) < now;
         const reminderMessage = `Task: ${task.title}`;
-        // const reminderMessage = `Task: ${task.title}
-        // By ${task.assignedUser}`;
         return { ...task, reminderMessage, isExpired };
       });
   };

@@ -6,6 +6,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
+import { Alert, BackHandler } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -65,14 +66,30 @@ const HomeScreen = ({ route }) => {
     };
     retrieveAuthToken();
   }, [route.params]);
-
+  
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      fetchTasks(token);
-    });
-    return unsubscribe;
-  }, [navigation, token]);
+    const backAction = () => {
+      if (navigation.isFocused()) {
+        Alert.alert('Quit App', 'Are you sure you want to quit?', [
+          {
+            text: 'Cancel',
+            onPress: () => null,
+            style: 'cancel',
+          },
+          { text: 'Yes', onPress: () => BackHandler.exitApp() },
+        ]);
+        return true;
+      }
+    };
 
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
+  
   const { username } = route.params;
 
   const fetchTasks = (token) => {

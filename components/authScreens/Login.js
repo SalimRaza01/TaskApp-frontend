@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CheckBox from '@react-native-community/checkbox';
 import { useColorScheme } from 'react-native';
+import { Alert, BackHandler } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -53,7 +54,7 @@ export default function Login() {
   const navigation = useNavigation();
 
   const handleLogin = async () => {
-    console.log('Login button pressed');
+
     try {
       const response = await fetch('https://taskapp-service.onrender.com/login', {
         method: 'POST',
@@ -75,7 +76,6 @@ export default function Login() {
           } else {
             await AsyncStorage.removeItem('stayLoggedIn');
           }
-
           console.log('Login successful. Welcome, ' + user.username, user.email, token);
           navigation.navigate('Drawer', { username: user.username, email: user.email, token, isDarkTheme });
         }
@@ -83,6 +83,26 @@ export default function Login() {
     } catch (error) {
       console.error('An error occurred:', error);
     }
+
+    useEffect(() => {
+      const backAction = () => {
+        Alert.alert('Quit App', 'Are you sure you want to quit?', [
+          {
+            text: 'Cancel',
+            onPress: () => null,
+            style: 'cancel',
+          },
+          { text: 'Yes', onPress: () => BackHandler.exitApp() },
+        ]);
+        return true;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction
+      );
+      return () => backHandler.remove();
+    }, []);
   };
 
   return (
@@ -261,8 +281,8 @@ const styles = StyleSheet.create({
     marginLeft: width * 0.01,
   },
   eyebutton: {
-    width: 20, 
-    height: 20, 
+    width: 20,
+    height: 20,
     marginRight: width * 0.065
   }
 })
