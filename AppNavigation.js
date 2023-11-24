@@ -105,7 +105,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
                 style={{
                   width: width * 0.06,
                   height: width * 0.06,
-                   tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
+                  tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
                 }}
                 source={require('./assets/ProfileIcon.png')}
               />
@@ -123,7 +123,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
                 style={{
                   width: width * 0.06,
                   height: width * 0.06,
-                   tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
+                  tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
                 }}
                 source={require('./assets/Setting.png')}
               />
@@ -143,7 +143,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
                 style={{
                   width: width * 0.06,
                   height: width * 0.06,
-                   tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
+                  tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
                 }}
                 source={require('./assets/bellIcon.png')}
               />
@@ -308,7 +308,7 @@ const StackNavigator = () => {
       <Stack.Screen options={{ headerShown: false }} name="Tabs" component={Tabs} />
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="DrawerContent" component={DrawerContent} />
-      <Stack.Screen options={{ headerShown: false }} name="NotifyScreen" component={NotifyScreen} />
+      <Stack.Screen name="Notification" component={NotifyScreen} />
       <Stack.Screen options={{ headerShown: false }} name="HomeScreen" component={HomeScreen} />
       <Stack.Screen
         name="Drawer"

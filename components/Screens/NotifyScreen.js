@@ -95,7 +95,7 @@ const NotifyScreen = (props) => {
 
   return (
     <View style={[styles.container, dynamicStyles.container]}>
-      <Text style={styles.Header}>Notification</Text>
+      {/* <Text style={styles.Header}>Notification</Text> */}
       {error ? (
         <Text style={styles.Error}>{error}</Text>
       ) : notificationEnabled ? (

@@ -28,7 +28,7 @@ const TaskItem = ({ task, response, openTaskDetails, token, username }) => {
       backgroundColor: isDarkTheme ? "#222" : "#FFF",
     },
     Black: {
-      color: isDarkTheme ? "#FFFFFF" : "#000",
+      color: isDarkTheme ? "#FFFFFF" : "#444",
     },
     Grey: {
       color: isDarkTheme ? "#DDDDDD" : "#666",
