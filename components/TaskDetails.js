@@ -340,9 +340,9 @@ const TaskDetails = ({ route, navigation }) => {
       >
         <View style={[styles.container, dynamicStyles.container]}>
           <Text style={[styles.Tasktitle, dynamicStyles.Textdark]}>Task: {task.title}</Text>
-          <TouchableOpacity style={[styles.EditBox,]}>
+          {/* <TouchableOpacity style={[styles.EditBox,]}>
             <Image style={styles.SendIcon} source={require('../assets/EditIcon.png')} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Text style={[styles.Taskdecription, dynamicStyles.descDark]}>Description: {task.description}</Text>
 
           <View style={styles.divider} />

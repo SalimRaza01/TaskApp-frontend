@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Image
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -114,12 +115,14 @@ const TaskItem = ({ task, response, openTaskDetails, token, username }) => {
           Deadline: {formatDeadline(task.deadline).formattedDeadline}
         </Text>
       </View>
-      <View style={styles.buttonContainer}>
+      <View style={{flexDirection:'row', borderColor: '#007BFF', borderWidth: 1, borderRadius: width * 0.015,}}>
+      <TouchableOpacity style={[styles.EditTaskButton]}>
+          <Image style={styles.SendIcon} source={require('../assets/EditIcon.png')} />
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={() => openTaskDetails(task, token, username)}
-          style={[styles.ViewTaskButton]}
-        >
-          <Text style={styles.buttonText}>View Task</Text>
+          style={[styles.ViewTaskButton]}>
+          <Text style={styles.buttonText}>View</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -222,7 +225,14 @@ const styles = StyleSheet.create({
     borderRadius: width * 0.015,
     padding: width * 0.022,
     alignItems: 'center',
-    width: width * 0.25,
+    width: width * 0.13,
+  },
+  EditTaskButton: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: width * 0.015,
+    padding: width * 0.022,
+    alignItems: 'center',
+    width: width * 0.13,
   },
   taskCompleteTag: {
     fontSize: width * 0.025,
