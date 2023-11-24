@@ -35,7 +35,6 @@ const TaskDetails = ({ route }) => {
 
   const dynamicStyles = {
     container: {
-      // flex: 1,
       backgroundColor: isDarkTheme ? "#000" : '#f7f7f7',
     },
     input: {
@@ -118,7 +117,7 @@ const TaskDetails = ({ route }) => {
     }
   };
 
-  const handleToggleCompletion = async (taskId) => {
+  const handleToggleCompletion = async () => {
     try {
       if (task.status === 'Completed') {
         Alert.alert(
@@ -145,7 +144,7 @@ const TaskDetails = ({ route }) => {
 
               try {
                 const response = await axios.put(
-                  `${BASE_URL}/update/${taskId}`,
+                  `${BASE_URL}/update/${task._id}`,
                   { status: newStatus },
                   {
                     headers: {
@@ -347,9 +346,8 @@ const TaskDetails = ({ route }) => {
             showsVerticalScrollIndicator={false}>
             {comments.map((comment, index) => (
               <View key={index} style={styles.commentBox}>
-                <Text style={styles.commentor}>
-                  {comment.commenter ? comment.commenter.username || comment.commenter.email : 'Unknown User'}
-                </Text>
+                {console.log('Comment:', comment)}
+                <Text style={styles.commentor}>{comment.username}</Text>
                 <Text style={styles.commentText}>{comment.message}</Text>
               </View>
             ))}
