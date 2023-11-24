@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { View, Image, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView, Button } from 'react-native';
 import TaskModal from '../TaskModal';
 import TaskList from '../TaskList';
@@ -30,7 +30,7 @@ const HomeScreen = ({ route }) => {
   const [validationError, setValidationError] = useState(false);
   const [markedDates, setMarkedDates] = useState({});
 
-
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const colorScheme = useColorScheme();
   const isDarkTheme = colorScheme === 'dark';
 
@@ -65,8 +65,15 @@ const HomeScreen = ({ route }) => {
       }
     };
     retrieveAuthToken();
-  }, [route.params]);
-  
+
+    const fetchInterval = setInterval(() => {
+      fetchTasks(token);
+    }, 2000);
+    return () => {
+      clearInterval(fetchInterval);
+    };
+  }, [route.params, token]);
+
   useEffect(() => {
     const backAction = () => {
       if (navigation.isFocused()) {
@@ -89,7 +96,7 @@ const HomeScreen = ({ route }) => {
 
     return () => backHandler.remove();
   }, [navigation]);
-  
+
   const { username } = route.params;
 
   const fetchTasks = (token) => {
@@ -100,7 +107,7 @@ const HomeScreen = ({ route }) => {
         },
       })
       .then((response) => {
-        console.log('API Response:', response.data);
+        // console.log('API Response:', response.data);
         if (response.status === 200) {
           const { assignedTasks, userTasks } = response.data;
           const markedDates = assignedTasks.concat(userTasks).reduce((dates, task) => {
@@ -145,6 +152,7 @@ const HomeScreen = ({ route }) => {
       },
     })
       .then(response => {
+        console.log('API Response after adding task:', response.data);
         setModalVisible(false);
         setTask({
           title: "",
@@ -156,6 +164,8 @@ const HomeScreen = ({ route }) => {
           assignedUser: "",
         });
         setTasks([...tasks, response.data]);
+        forceUpdate();
+        console.log('Updated Tasks:', tasks);
       })
       .catch(error => {
         if (error.response && error.response.status === 401) {
@@ -218,7 +228,7 @@ const HomeScreen = ({ route }) => {
   const openModal = () => {
     setModalVisible(true);
   };
-  
+
   const openTaskDetails = (task) => {
     navigation.navigate('TaskDetails', {
       task: task,
@@ -227,7 +237,7 @@ const HomeScreen = ({ route }) => {
       username: username
     });
   };
-  
+
 
   return (
     <View style={[styles.container, dynamicStyles.container]}>

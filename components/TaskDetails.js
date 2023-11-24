@@ -56,7 +56,20 @@ const TaskDetails = ({ route, navigation }) => {
   }
 
   useEffect(() => {
+    fetchTasks();
+    fetchComments();
+
+    const commentFetchInterval = setInterval(fetchComments, 500);
+    const fetchInterval = setInterval(fetchTasks, 500);
+    return () => {
+      clearInterval(fetchInterval);
+      clearInterval(commentFetchInterval);
+    };
+  }, []);
+
+  useEffect(() => {
     setComments(route.params.task.comments || []);
+
 
     const updatedHighlightedDates = {};
     let currentDate = new Date(task.createdAt);
@@ -80,6 +93,43 @@ const TaskDetails = ({ route, navigation }) => {
 
     setHighlightedDates(updatedHighlightedDates);
   }, [route.params.task.comments, task.createdAt, task.deadline]);
+
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/send-data`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        const { assignedTasks, userTasks } = response.data;
+      } else {
+        console.error('Error fetching tasks:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    }
+  };
+
+  const fetchComments = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/fetch-comments/${task._id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        const updatedComments = response.data.comments || [];
+        setComments(updatedComments);
+      } else {
+        console.error('Error fetching comments:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
 
   useEffect(() => {
     setComments(task.comments || []);
@@ -291,7 +341,7 @@ const TaskDetails = ({ route, navigation }) => {
         <View style={[styles.container, dynamicStyles.container]}>
           <Text style={[styles.Tasktitle, dynamicStyles.Textdark]}>Task: {task.title}</Text>
           <TouchableOpacity style={[styles.EditBox,]}>
-          <Image style={styles.SendIcon} source={require('../assets/EditIcon.png')} />
+            <Image style={styles.SendIcon} source={require('../assets/EditIcon.png')} />
           </TouchableOpacity>
           <Text style={[styles.Taskdecription, dynamicStyles.descDark]}>Description: {task.description}</Text>
 
