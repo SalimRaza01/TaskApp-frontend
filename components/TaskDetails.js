@@ -19,7 +19,7 @@ import { useColorScheme } from 'react-native';
 const { width, height } = Dimensions.get('window');
 
 const TaskDetails = ({ route, navigation }) => {
-  
+
   const BASE_URL = 'https://taskapp-service.onrender.com';
 
   const [highlightedDates, setHighlightedDates] = useState({});
@@ -290,7 +290,9 @@ const TaskDetails = ({ route, navigation }) => {
       >
         <View style={[styles.container, dynamicStyles.container]}>
           <Text style={[styles.Tasktitle, dynamicStyles.Textdark]}>Task: {task.title}</Text>
-
+          <TouchableOpacity style={[styles.EditBox,]}>
+          <Image style={styles.SendIcon} source={require('../assets/EditIcon.png')} />
+          </TouchableOpacity>
           <Text style={[styles.Taskdecription, dynamicStyles.descDark]}>Description: {task.description}</Text>
 
           <View style={styles.divider} />
@@ -405,7 +407,11 @@ const styles = StyleSheet.create({
   disabledButton: {
     opacity: 0.5,
   },
-
+  EditText: {
+    color: '#222',
+    fontSize: width * 0.035,
+    fontWeight: 'bold',
+  },
   buttonText: {
     color: '#fff',
     fontSize: width * 0.035,
@@ -563,5 +569,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: -7,
     color: '#333',
-  }
+  },
+  EditBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: height * 0.01,
+    borderRadius: width * 0.03,
+    marginTop: height * -0.05,
+    marginBottom: height * 0.02,
+    alignSelf: 'flex-end',
+  },
 });
