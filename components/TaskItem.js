@@ -14,17 +14,17 @@ import Swipeout from 'react-native-swipeout';
 const { width, height } = Dimensions.get('window');
 
 const CustomSwipeoutButton = ({ onPress, imageSource, backgroundColor, height }) => (
-  <TouchableOpacity onPress={onPress} style={[styles.swipeoutButton, { backgroundColor, height }]}>
+  <TouchableOpacity onPress={() => onPress()} style={[styles.swipeoutButton, { backgroundColor, height }]}>
     <Image source={require('../assets/Deleteicon.png')} style={styles.swipeoutImage2} />
   </TouchableOpacity>
 );
 const CustomSwipeoutButton2 = ({ onPress2, imageSource, backgroundColor, height }) => (
-  <TouchableOpacity onPress={onPress2} style={[styles.swipeoutButton, { backgroundColor, height }]}>
+  <TouchableOpacity onPress={() => onPress2()} style={[styles.swipeoutButton, { backgroundColor, height }]}>
     <Image source={require('../assets/EditIcon.png')} style={styles.swipeoutImage} />
   </TouchableOpacity>
 );
 
-const TaskItem = ({ task, response, openTaskDetails, token, username, onDelete, onEdit }) => {
+const TaskItem = ({ task, response, openTaskDetails, token, username, handleDeleteTask, onEdit }) => {
 
   const navigation = useNavigation();
 
@@ -50,11 +50,11 @@ const TaskItem = ({ task, response, openTaskDetails, token, username, onDelete, 
 
   const swipeoutBtns = [
     {
-      component: <CustomSwipeoutButton2 onPress={() => onDelete(task._id)} imageSource={require('../assets/Deleteicon.png')} backgroundColor='#FFFFFF' height={height * 0.5} />,
+      component: <CustomSwipeoutButton2 onPress2={() => onEdit(task)} imageSource={require('../assets/EditIcon.png')} backgroundColor='#FFFFFF' />,
     },
     {
-      component: <CustomSwipeoutButton onPress2={() => onEdit(task)} imageSource={require('../assets/EditIcon.png')}  backgroundColor='#FFFFFF' height={height * 0.5} />,
-    },
+      component: <CustomSwipeoutButton onPress={() => handleDeleteTask(task._id)} imageSource={require('../assets/Deleteicon.png')} backgroundColor='#FFFFFF' />,
+    }
   ];
 
   const formatDeadline = deadline => {
@@ -235,11 +235,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   swipeoutImage: {
-    width: width * 0.07, 
-    height: width * 0.07, 
+    width: width * 0.07,
+    height: width * 0.07,
   },
   swipeoutImage2: {
-    width: width * 0.087, 
-    height: width * 0.087, 
+    width: width * 0.087,
+    height: width * 0.087,
   },
 });

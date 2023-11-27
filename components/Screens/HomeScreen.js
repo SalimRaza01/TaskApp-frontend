@@ -70,20 +70,14 @@ const HomeScreen = ({ route }) => {
     const fetchInterval = setInterval(() => {
       fetchTasks(token);
     }, 2000);
-    return () => {
-      clearInterval(fetchInterval);
-    };
+    return () => clearInterval(fetchInterval);
   }, [route.params, token]);
 
   useEffect(() => {
     const backAction = () => {
       if (navigation.isFocused()) {
         Alert.alert('Quit App', 'Are you sure you want to quit?', [
-          {
-            text: 'Cancel',
-            onPress: () => null,
-            style: 'cancel',
-          },
+          { text: 'Cancel', onPress: () => null, style: 'cancel' },
           { text: 'Yes', onPress: () => BackHandler.exitApp() },
         ]);
         return true;
@@ -108,7 +102,6 @@ const HomeScreen = ({ route }) => {
         },
       })
       .then((response) => {
-        // console.log('API Response:', response.data);
         if (response.status === 200) {
           const { assignedTasks, userTasks } = response.data;
           const markedDates = assignedTasks.concat(userTasks).reduce((dates, task) => {
@@ -178,7 +171,7 @@ const HomeScreen = ({ route }) => {
   const handleToggleCompletion = (taskId) => {
     axios
       .put(
-        `${BASE_URL}/update/${taskId}`,
+        `${BASE_URL}/update/${task._id}`,
         {},
         {
           headers: {
@@ -200,17 +193,23 @@ const HomeScreen = ({ route }) => {
   };
 
   const handleDeleteTask = (taskId) => {
-    axios.delete(`${BASE_URL}/delete/${taskId}`)
-      .then(() => {
-        setTasks(tasks.filter(t => t._id !== taskId));
-        console.log('Delete task with ID:', taskId);
-      })
-      .catch(error => console.error('Error deleting task:', error));
+    axios.delete(`${BASE_URL}/delete/${taskId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => {
+      console.log('Deleting task with ID:', taskId, response.data);
+      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
+    }).catch((error) => {
+      console.error('Error deleting task:', error);
+    });
   };
 
   const handleEdit = (task) => {
-    // Implement your edit logic here
-    console.log('Edit task:', task);
+    setTask(task);
+    setModalVisible(true);
+    console.log('Edit Task', task)
   };
 
   const handleCancel = () => {
@@ -245,26 +244,16 @@ const HomeScreen = ({ route }) => {
 
   return (
     <View style={[styles.container, dynamicStyles.container]}>
-
       <Text style={[styles.WelcomeText, dynamicStyles.Text]}>Welcome,</Text>
-
       <Text style={[styles.UserName, dynamicStyles.Text]}>{username}</Text>
-
       <TouchableOpacity onPress={() => navigation.navigate('Profile')} >
         <Image style={styles.UserProfileImage} source={require('../../assets/profile.png')} />
       </TouchableOpacity>
-
       <View style={styles.divider} />
-
       <ScrollView showsVerticalScrollIndicator={false} >
-
-        <View style={{ marginBottom: width * 0.03 }}>
-        </View>
-
+        <View style={{ marginBottom: width * 0.03 }}></View>
         {tasks.length === 0 ? (
-          <Image
-            source={require('../../assets/NoTaskDark.png')}
-            style={styles.noTasksImage} />
+          <Image source={require('../../assets/NoTaskDark.png')} style={styles.noTasksImage} />
         ) : (
           <TaskList
             tasks={tasks}
@@ -272,18 +261,25 @@ const HomeScreen = ({ route }) => {
             openTaskDetails={openTaskDetails}
             token={token}
             username={username}
-            onDelete={handleDeleteTask}
+            handleDeleteTask={handleDeleteTask}
             onEdit={handleEdit}
           />
         )}
       </ScrollView>
-
-      <TouchableOpacity onPress={openModal} >
-        <LinearGradient
-          colors={['#3498db', '#007BFF']}
-          style={styles.addButton}>
-          <Text style={styles.addButtonText}>Add Task</Text>
-        </LinearGradient>
+      {modalVisible && (
+        <TaskModal
+          modalVisible={modalVisible}
+          task={task}
+          setTask={setTask}
+          handleAddTask={handleAddTask}
+          handleCancel={handleCancel}
+          validationError={validationError}
+          assignedUser={assignedUser}
+          setAssignedUser={setAssignedUser}
+        />
+      )}
+      <TouchableOpacity style={styles.addButton} onPress={openModal}>
+        <Text style={styles.addButtonText}>Add Task</Text>
       </TouchableOpacity>
     </View>
   );
@@ -318,6 +314,7 @@ const styles = StyleSheet.create({
     height: 2,
   },
   addButton: {
+    backgroundColor: "#007BFF",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: height * 0.02,

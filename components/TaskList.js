@@ -34,7 +34,7 @@ const TaskList = ({
           openTaskDetails={openTaskDetails}
           token={token}
           username={username}
-          onDelete={handleDeleteTask}
+          handleDeleteTask={handleDeleteTask}
           onEdit={onEdit}
         />
       ))}
