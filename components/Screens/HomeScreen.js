@@ -111,8 +111,8 @@ const HomeScreen = ({ route }) => {
               dates[createdDate] = { selected: true, selectedColor: "#0A79DF" };
               dates[deadlineDate] = { selected: true, selectedColor: "#0A79DF" };
             } catch (error) {
-              console.error('Error processing date:', error);
-              console.error('Task with problematic dates:', task);
+              // console.error('Error processing date:', error);
+              // console.error('Task with problematic dates:', task);
             }
             return dates;
           }, {});
@@ -131,18 +131,31 @@ const HomeScreen = ({ route }) => {
       setValidationError(true);
       return;
     }
+
     const updatedTask = {
       ...task,
       createdAt: new Date().toLocaleString(),
       ...route.params,
       assignedUser: assignedUser,
     };
-    axios.post(`${BASE_URL}/send-data`, updatedTask, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    })
+
+    if (task._id) {
+      // If task has an ID, it's an edit
+      handleEditTask(updatedTask);
+    } else {
+      // If task doesn't have an ID, it's an add
+      handleCreateTask(updatedTask);
+    }
+  };
+
+  const handleCreateTask = (updatedTask) => {
+    axios
+      .post(`${BASE_URL}/send-data`, updatedTask, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      })
       .then(response => {
         console.log('API Response after adding task:', response.data);
         setModalVisible(false);
@@ -165,6 +178,36 @@ const HomeScreen = ({ route }) => {
         } else {
           console.error('Error adding data:', error);
         }
+      });
+  };
+
+  const handleEditTask = (updatedTask) => {
+    axios
+      .put(`${BASE_URL}/update/${task._id}`, updatedTask, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => {
+        console.log('API Response after updating task:', response.data);
+        setModalVisible(false);
+        setTask({
+          title: "",
+          description: "",
+          status: "Pending",
+          deadline: "",
+          priority: "",
+          createdAt: "",
+          assignedUser: "",
+        });
+        const updatedTasks = tasks.map((t) =>
+          t._id === task._id ? response.data : t
+        );
+        setTasks(updatedTasks);
+      })
+      .catch(error => {
+        console.error('Error updating data:', error);
       });
   };
 
@@ -233,6 +276,11 @@ const HomeScreen = ({ route }) => {
     setModalVisible(true);
   };
 
+  const openEditModal = (task) => {
+    setTask(task);
+    setModalVisible(true);
+  };
+
   const openTaskDetails = (task) => {
     navigation.navigate('TaskDetails', {
       task: task,
@@ -262,7 +310,7 @@ const HomeScreen = ({ route }) => {
             token={token}
             username={username}
             handleDeleteTask={handleDeleteTask}
-            onEdit={handleEdit}
+            onEdit={openEditModal}
           />
         )}
       </ScrollView>

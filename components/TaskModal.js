@@ -24,6 +24,7 @@ const TaskModal = ({
   validationError,
   assignedUser,
   setAssignedUser,
+  isEdit, 
 }) => {
 
   const colorScheme = useColorScheme();
@@ -55,7 +56,9 @@ const TaskModal = ({
     <Modal visible={modalVisible} animationType="slide" transparent={false}>
       <ScrollView style={[styles.scrollview, dynamicStyles.scrollDark]}>
         <View style={[styles.modalContainer, dynamicStyles.container]}>
-          <Text style={[styles.WelcomeText, dynamicStyles.Textdark]}>Create Task</Text>
+        <Text style={[styles.WelcomeText, dynamicStyles.Textdark]}>
+            {isEdit ? 'Edit Task' : 'Create Task'}
+          </Text>
           <TextInput
             style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
             placeholderTextColor="#999"
@@ -105,13 +108,12 @@ const TaskModal = ({
             </Text>
           )}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <TouchableOpacity
-              style={[styles.button, { backgroundColor: '#007BFF' }]}
-              onPress={handleAddTask}>
-              <Text style={styles.buttonText}>
-                {task && task._id ? 'Update' : 'Add'}
-              </Text>
-            </TouchableOpacity>
+         <TouchableOpacity
+            style={[styles.button, { backgroundColor: '#007BFF' }]}
+            onPress={() => (isEdit ? handleEditTask() : handleAddTask())}
+          >
+            <Text style={styles.buttonText}>{isEdit ? 'Update' : 'Add'}</Text>
+          </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, { backgroundColor: '#FF3B30' }]}
               onPress={handleCancel}>
