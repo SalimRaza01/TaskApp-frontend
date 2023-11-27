@@ -15,6 +15,7 @@ import {
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import axios from 'axios';
 import { useColorScheme } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
 
@@ -353,16 +354,26 @@ const TaskDetails = ({ route, navigation }) => {
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
-            <View style={styles.Prioritybox}>
-              <Text style={styles.TaskPriorityText}>
-                Priority: {task.priority}{' '}
-              </Text>
+            <View >
+              <LinearGradient
+                colors={['#FFD700', '#FFA500']}
+                style={styles.Prioritybox}
+              >
+                <Text style={styles.TaskPriorityText}>
+                  Priority: {task.priority}
+                </Text>
+              </LinearGradient>
             </View>
 
-            <View style={styles.Deadlinebox}>
-              <Text style={styles.DeadlineText}>
-                Deadline: {formatDeadline(task.deadline).formattedDeadline}
-              </Text>
+            <View>
+              <LinearGradient
+                colors={['#FF6347', '#FF0000']}
+                style={styles.Deadlinebox}
+              >
+                <Text style={styles.DeadlineText}>
+                  Deadline: {formatDeadline(task.deadline).formattedDeadline}
+                </Text>
+              </LinearGradient>
             </View>
 
             <TouchableOpacity
@@ -374,9 +385,14 @@ const TaskDetails = ({ route, navigation }) => {
               onPress={() => handleToggleCompletion(task._id)}
               disabled={isTaskCompleted}
             >
-              <Text style={styles.buttonText}>
-                {isTaskCompleted ? 'Task Completed' : 'Mark Completed'}
-              </Text>
+              <LinearGradient
+                colors={isTaskCompleted ? ['#808080', '#808080'] : ['#3498db', '#007BFF']}
+                style={styles.StatusBox}
+              >
+                <Text style={styles.buttonText}>
+                  {isTaskCompleted ? 'Task Completed' : 'Mark Completed'}
+                </Text>
+              </LinearGradient>
             </TouchableOpacity>
 
           </View>
@@ -393,6 +409,10 @@ const TaskDetails = ({ route, navigation }) => {
           />
 
           <ScrollView
+            ref={(ref) => { this.scrollView = ref; }}
+            onContentSizeChange={() => {
+              this.scrollView.scrollToEnd({ animated: true });
+            }}
             style={styles.commentContainer}
             showsVerticalScrollIndicator={false}
           >
@@ -401,7 +421,7 @@ const TaskDetails = ({ route, navigation }) => {
                 key={index}
                 style={[
                   styles.commentBox,
-                  { alignSelf: comment.username === route.params.username ? 'flex-end' : 'flex-start' },
+                  { alignSelf: comment.username === route.params.username ? 'flex-end' : 'flex-start', height: 'auto', },
                 ]}
               >
                 <Text style={styles.commentor}>{comment.username}</Text>
@@ -413,18 +433,31 @@ const TaskDetails = ({ route, navigation }) => {
           <TextInput
             style={[
               styles.input,
-              { color: '#000', backgroundColor: '#fff', ...styles.shadow }, dynamicStyles.input
+              { color: '#000', backgroundColor: '#fff', ...styles.shadow },
+              dynamicStyles.input,
+              { height: Math.max(40, height * 0.07) },
             ]}
             placeholderTextColor="#999"
-            placeholder="  Comment"
+            placeholder="Comment"
             onChangeText={handleCommentChange}
             value={comment}
+            multiline={true}
+            onContentSizeChange={(e) => {
+              const newHeight = Math.max(40, e.nativeEvent.contentSize.height);
+              this.scrollView.scrollToEnd({ animated: true });
+            }}
           />
 
           <TouchableOpacity
-            style={styles.CommentSendBtn}
+            style={[{ ...styles.shadow }]}
             onPress={handleCommentSubmit}>
-            <Image style={styles.SendIcon} source={require('../assets/Send.png')} />
+             
+            <LinearGradient
+              colors={['#3498db', '#007BFF']}
+              style={styles.CommentSendBtn}
+            > 
+             <Image style={styles.SendIcon} source={require('../assets/Send.png')} />
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -441,7 +474,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#f7f7f7',
   },
   commentContainer: {
     height: width * 0.08,
@@ -453,17 +485,16 @@ const styles = StyleSheet.create({
   pendingButton: {
     backgroundColor: '#3498db',
   },
-
   disabledButton: {
     opacity: 0.5,
   },
-  EditText: {
-    color: '#222',
+  buttonText: {
+    color: '#fff',
     fontSize: width * 0.035,
     fontWeight: 'bold',
   },
-  buttonText: {
-    color: '#fff',
+  EditText: {
+    color: '#222',
     fontSize: width * 0.035,
     fontWeight: 'bold',
   },
@@ -478,10 +509,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#007BFF',
     paddingVertical: height * 0.02,
     borderRadius: width * 1,
-    marginTop: height * -0.078,
+    marginTop: height * -0.085,
     marginBottom: height * 0.03,
-    width: width * 0.1,
-    height: height * 0.046,
+    width: width * 0.12,
+    height: height * 0.060,
     marginLeft: width * 0.78,
   },
   SendIcon: {
@@ -551,9 +582,12 @@ const styles = StyleSheet.create({
     padding: width * 0.025,
     marginTop: height * 0.03,
     marginBottom: height * 0.02,
-    borderRadius: width * 1,
+    borderRadius: width * 0.06,
     fontSize: width * 0.04,
     height: height * 0.07,
+    width: width * 0.75,
+    paddingLeft: width * 0.04,
+    paddingRight: width * 0.04,
   },
   Taskdecription: {
     fontSize: width * 0.03,
@@ -590,8 +624,6 @@ const styles = StyleSheet.create({
     marginBottom: height * 0.01,
     padding: width * 0.04,
     borderRadius: width * 1,
-    elevation: 0,
-    paddingLeft: 30,
   },
   commentText: {
     fontSize: width * 0.04,
@@ -610,7 +642,7 @@ const styles = StyleSheet.create({
     marginTop: height * 0.015,
     marginBottom: height * 0.006,
     borderRadius: width * 0.03,
-    elevation: 20,
+    elevation: 10,
     shadowColor: '#000000',
     overflow: 'hidden',
   },

@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import { Alert, BackHandler } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
 
@@ -137,14 +138,12 @@ const HomeScreen = ({ route }) => {
       setValidationError(true);
       return;
     }
-
     const updatedTask = {
       ...task,
       createdAt: new Date().toLocaleString(),
       ...route.params,
       assignedUser: assignedUser,
     };
-
     axios.post(`${BASE_URL}/send-data`, updatedTask, {
       headers: {
         'Content-Type': 'application/json',
@@ -204,8 +203,14 @@ const HomeScreen = ({ route }) => {
     axios.delete(`${BASE_URL}/delete/${taskId}`)
       .then(() => {
         setTasks(tasks.filter(t => t._id !== taskId));
+        console.log('Delete task with ID:', taskId);
       })
       .catch(error => console.error('Error deleting task:', error));
+  };
+
+  const handleEdit = (task) => {
+    // Implement your edit logic here
+    console.log('Edit task:', task);
   };
 
   const handleCancel = () => {
@@ -238,7 +243,6 @@ const HomeScreen = ({ route }) => {
     });
   };
 
-
   return (
     <View style={[styles.container, dynamicStyles.container]}>
 
@@ -268,22 +272,19 @@ const HomeScreen = ({ route }) => {
             openTaskDetails={openTaskDetails}
             token={token}
             username={username}
+            onDelete={handleDeleteTask}
+            onEdit={handleEdit}
           />
         )}
       </ScrollView>
-      <TouchableOpacity style={styles.addButton} onPress={openModal} >
-        <Text style={styles.addButtonText}>Add Task</Text>
+
+      <TouchableOpacity onPress={openModal} >
+        <LinearGradient
+          colors={['#3498db', '#007BFF']}
+          style={styles.addButton}>
+          <Text style={styles.addButtonText}>Add Task</Text>
+        </LinearGradient>
       </TouchableOpacity>
-      <TaskModal
-        modalVisible={modalVisible}
-        task={task}
-        setTask={setTask}
-        handleAddTask={handleAddTask}
-        handleCancel={handleCancel}
-        validationError={validationError}
-        assignedUser={assignedUser}
-        setAssignedUser={setAssignedUser}
-      />
     </View>
   );
 };
@@ -319,7 +320,6 @@ const styles = StyleSheet.create({
   addButton: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#007BFF",
     paddingVertical: height * 0.02,
     borderRadius: width * 0.02,
     marginTop: height * 0.01,

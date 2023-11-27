@@ -10,7 +10,9 @@ const TaskList = ({
   response,
   openTaskDetails,
   token,
-  username
+  username,
+  handleDeleteTask,
+  onEdit,
 }) => {
   const taskItemHeight = 150; 
 
@@ -32,6 +34,8 @@ const TaskList = ({
           openTaskDetails={openTaskDetails}
           token={token}
           username={username}
+          onDelete={handleDeleteTask}
+          onEdit={onEdit}
         />
       ))}
     </ScrollView>
