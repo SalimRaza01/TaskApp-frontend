@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image, ScrollView } from 'react-native';
 import axios from 'axios';
 import { useColorScheme } from 'react-native';
 
@@ -122,15 +122,17 @@ const NotifyScreen = (props) => {
             const allTasks = upcomingTasks.concat(expiredTasks);
 
             return allTasks.map((task, index) => (
-              <TouchableOpacity key={index}>
-                <View style={[styles.textbox, dynamicStyles.Button, task.isExpired && { opacity: 0.5 }]}>
-                  <Image style={styles.Taskremindericon} source={require('../../assets/Reminder.png')} />
-                  <View>
-                    <Text style={[styles.NotifyTitle]}>{task.reminderMessage}</Text>
-                    <Text style={styles.Timing}>{`Deadline: ${new Date(task.deadline).toLocaleString()}`}</Text>
+              
+                <TouchableOpacity key={index}>
+                  <View style={[styles.textbox, dynamicStyles.Button, task.isExpired && { opacity: 0.5 }]}>
+                    <Image style={styles.Taskremindericon} source={require('../../assets/Reminder.png')} />
+                    <View>
+                      <Text style={[styles.NotifyTitle]}>{task.reminderMessage}</Text>
+                      <Text style={styles.Timing}>{`Deadline: ${new Date(task.deadline).toLocaleString()}`}</Text>
+                    </View>
                   </View>
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
+
             ));
           })()
         )

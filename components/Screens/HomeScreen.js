@@ -66,12 +66,13 @@ const HomeScreen = ({ route }) => {
       }
     };
     retrieveAuthToken();
-
+  
     const fetchInterval = setInterval(() => {
       fetchTasks(token);
-    }, 2000);
+    }, 2000);    
     return () => clearInterval(fetchInterval);
   }, [route.params, token]);
+
 
   useEffect(() => {
     const backAction = () => {
