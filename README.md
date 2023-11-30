@@ -1,3 +1,7 @@
+
+![Group 26](https://github.com/SalimRaza01/TaskApp-frontend/assets/108859692/cdff1766-658a-47ad-ae01-3350612bb4e8)
+
+
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
