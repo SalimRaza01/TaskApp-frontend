@@ -167,8 +167,12 @@ const TaskDetails = ({route, navigation}) => {
       );
 
       console.log('Comment saved:', response.data);
-      setComments(response.data.comments || []);
       setComment('');
+      fetchComments();
+
+      setTimeout(() => {
+        scrollViewRef.current.scrollToEnd({animated: true});
+      }, 100);
     } catch (error) {
       console.error('Error saving comment:', error);
     } finally {
@@ -348,13 +352,14 @@ const TaskDetails = ({route, navigation}) => {
     <KeyboardAvoidingView
       style={[styles.container, dynamicStyles.container]}
       behavior={Platform.OS === 'ios' ? 'padding' : null}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}>
       <ScrollView
         contentContainerStyle={[
           styles.scrollContainer,
           dynamicStyles.container,
         ]}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled">
         <View style={[styles.container, dynamicStyles.container]}>
           <Text style={[styles.Tasktitle, dynamicStyles.Textdark]}>
             Task: {task.title}
@@ -373,7 +378,7 @@ const TaskDetails = ({route, navigation}) => {
             }}>
             <View>
               <LinearGradient
-                colors={['#FFD700', '#FFA500']}
+                colors={['#FFD500', '#FCA500']}
                 style={styles.Prioritybox}>
                 <Text style={styles.TaskPriorityText}>
                   Priority: {task.priority}
@@ -383,7 +388,7 @@ const TaskDetails = ({route, navigation}) => {
 
             <View>
               <LinearGradient
-                colors={['#FF6347', '#FF0000']}
+                colors={['#FF6347', '#FC0000']}
                 style={styles.Deadlinebox}>
                 <Text style={styles.DeadlineText}>
                   Deadline: {formatDeadline(task.deadline).formattedDeadline}
@@ -407,31 +412,34 @@ const TaskDetails = ({route, navigation}) => {
                 }
                 style={styles.StatusBox}>
                 <Text style={styles.buttonText}>
-                  {isTaskCompleted ? 'Task Completed' : 'Mark Completed'}
+                  {isTaskCompleted ? 'Completed' : 'Mark Done'}
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            onPress={() => setCalendarVisible(!isCalendarVisible)}>
-            <Text style={styles.toggleButton}>
-              {isCalendarVisible ? 'Hide Calendar' : 'Show Calendar'}
-            </Text>
-          </TouchableOpacity>
 
-          {isCalendarVisible && (
-            <Calendar
-              style={styles.datePicker}
-              current={deadline}
-              markingType={'period'}
-              markedDates={{
-                ...rangeDates,
-                ...highlightedDates,
-                [deadline.split('T')[0]]: {color: 'red', endingDay: true},
-              }}
-              renderDay={(date, item) => customDayRenderer(date, item)}
-            />
-          )}
+          <View>
+            <TouchableOpacity
+              onPress={() => setCalendarVisible(!isCalendarVisible)}>
+              <Text style={styles.toggleButton}>
+                {isCalendarVisible ? 'Hide Calendar' : 'Show Calendar'}
+              </Text>
+            </TouchableOpacity>
+
+            {isCalendarVisible && (
+              <Calendar
+                style={styles.datePicker}
+                current={deadline}
+                markingType={'period'}
+                markedDates={{
+                  ...rangeDates,
+                  ...highlightedDates,
+                  [deadline.split('T')[0]]: {color: 'red', endingDay: true},
+                }}
+                renderDay={(date, item) => customDayRenderer(date, item)}
+              />
+            )}
+          </View>
 
           <ScrollView
             ref={scrollViewRef}
@@ -471,7 +479,13 @@ const TaskDetails = ({route, navigation}) => {
           <TextInput
             style={[
               styles.input,
-              {color: '#000', backgroundColor: '#fff', ...styles.shadow},
+              {
+                color: '#000',
+                backgroundColor: '#fff',
+                ...styles.shadow,
+                paddingTop: Platform.OS === 'ios' ? 13 : 0,
+                paddingBottom: Platform.OS === 'ios' ? 10 : 0,
+              },
               dynamicStyles.input,
               {
                 height:
@@ -485,10 +499,6 @@ const TaskDetails = ({route, navigation}) => {
             onChangeText={handleCommentChange}
             value={comment}
             multiline={true}
-            onContentSizeChange={e => {
-              const newHeight = Math.max(40, e.nativeEvent.contentSize.height);
-              scrollViewRef.current.scrollToEnd({animated: true});
-            }}
           />
 
           <TouchableOpacity
@@ -709,6 +719,12 @@ const styles = StyleSheet.create({
   },
   commentText: {
     color: '#FFF',
+    fontSize: width * 0.04,
+    marginLeft: width * 0.02,
+    marginRight: width * 0.02,
+  },
+  toggleButton: {
+    alignSelf: 'center',
     fontSize: width * 0.04,
     marginLeft: width * 0.02,
     marginRight: width * 0.02,
