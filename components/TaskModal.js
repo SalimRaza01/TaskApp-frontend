@@ -96,10 +96,9 @@ const TaskModal = ({
     } else {
       return (
         <Picker
-          style={[styles.input, dynamicStyles.pickerContainer, dynamicStyles.picker]}
+          style={[styles.Pickerinput, dynamicStyles.pickerContainer, dynamicStyles.picker]}
           selectedValue={task && task.priority ? task.priority : ''}
           onValueChange={value => setTask({...task, priority: value})}>
-          <Picker.Item label="Select Priority" value="" />
           <Picker.Item label="High" value="High" />
           <Picker.Item label="Medium" value="Medium" />
           <Picker.Item label="Low" value="Low" />
@@ -183,7 +182,7 @@ export default TaskModal;
 const styles = StyleSheet.create({
   scrollview: {
     flex: 1,
-    marginTop: height * 0.06,
+    marginTop: Platform.OS === 'android' ? height * 0 : height * 0.06,
     backgroundColor: '#FFFFFF',
   },
   container: {
@@ -285,6 +284,7 @@ const styles = StyleSheet.create({
     borderRadius: width * 0.02,
     fontSize: width * 0.03,
     width: width * 0.86,
+    height: height * 0.05,
   },
   inputLabel: {
     marginTop: height * 0.01,

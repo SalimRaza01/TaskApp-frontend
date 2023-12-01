@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   View,
   Text,
@@ -12,32 +12,34 @@ import {
   KeyboardAvoidingView,
   Alert,
 } from 'react-native';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
+import {Calendar, LocaleConfig} from 'react-native-calendars';
 import axios from 'axios';
-import { useColorScheme } from 'react-native';
+import {useColorScheme} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
-const TaskDetails = ({ route, navigation }) => {
-
+const TaskDetails = ({route, navigation}) => {
   const BASE_URL = 'https://taskapp-service.onrender.com';
 
   const [highlightedDates, setHighlightedDates] = useState({});
-  const [task, setTask] = useState({ ...route.params.task, status: 'Pending' });
-  const { token } = route.params;
-  const { username } = route.params;
-  const { deadline, createdAt } = task;
+  const [task, setTask] = useState({...route.params.task, status: 'Pending'});
+  const {token} = route.params;
+  const {username} = route.params;
+  const {deadline, createdAt} = task;
   const [comments, setComments] = useState(task.comments || []);
   const [comment, setComment] = useState('');
   const [isTaskCompleted, setIsTaskCompleted] = useState(false);
+  const [isCalendarVisible, setCalendarVisible] = useState(true);
 
   const colorScheme = useColorScheme();
   const isDarkTheme = colorScheme === 'dark';
 
+  const scrollViewRef = useRef();
+
   const dynamicStyles = {
     container: {
-      backgroundColor: isDarkTheme ? "#000" : '#f7f7f7',
+      backgroundColor: isDarkTheme ? '#000' : '#f7f7f7',
     },
     input: {
       color: isDarkTheme ? '#FFF' : '#000',
@@ -51,10 +53,10 @@ const TaskDetails = ({ route, navigation }) => {
       color: isDarkTheme ? '#FFFFFF' : '#333',
     },
     dateDark: {
-      backgroundColor: isDarkTheme ? "#222" : '#fff',
+      backgroundColor: isDarkTheme ? '#222' : '#fff',
       shadowColor: isDarkTheme ? '#000' : '#ccc',
     },
-  }
+  };
 
   useEffect(() => {
     fetchTasks();
@@ -71,14 +73,13 @@ const TaskDetails = ({ route, navigation }) => {
   useEffect(() => {
     setComments(route.params.task.comments || []);
 
-
     const updatedHighlightedDates = {};
     let currentDate = new Date(task.createdAt);
 
     try {
       while (currentDate <= endDate) {
         const date = currentDate.toISOString().split('T')[0];
-        updatedHighlightedDates[date] = { color: '#43BE31' };
+        updatedHighlightedDates[date] = {color: '#43BE31'};
 
         if (date === task.createdAt.split('T')[0]) {
           updatedHighlightedDates[date].startingDay = true;
@@ -99,12 +100,12 @@ const TaskDetails = ({ route, navigation }) => {
     try {
       const response = await axios.get(`${BASE_URL}/send-data`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.status === 200) {
-        const { assignedTasks, userTasks } = response.data;
+        const {assignedTasks, userTasks} = response.data;
       } else {
         console.error('Error fetching tasks:', response.data.message);
       }
@@ -115,11 +116,14 @@ const TaskDetails = ({ route, navigation }) => {
 
   const fetchComments = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/fetch-comments/${task._id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
+      const response = await axios.get(
+        `${BASE_URL}/fetch-comments/${task._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       if (response.status === 200) {
         const updatedComments = response.data.comments || [];
@@ -151,12 +155,16 @@ const TaskDetails = ({ route, navigation }) => {
         comment,
       };
 
-      const response = await axios.post(`${BASE_URL}/save-comment`, commentData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+      const response = await axios.post(
+        `${BASE_URL}/save-comment`,
+        commentData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         },
-      });
+      );
 
       console.log('Comment saved:', response.data);
       setComments(response.data.comments || []);
@@ -191,23 +199,26 @@ const TaskDetails = ({ route, navigation }) => {
             onPress: async () => {
               const newStatus = 'Completed';
 
-              setTask((prevTask) => ({ ...prevTask, status: newStatus }));
+              setTask(prevTask => ({...prevTask, status: newStatus}));
 
               try {
                 const response = await axios.put(
                   `${BASE_URL}/update/${task._id}`,
-                  { status: newStatus },
+                  {status: newStatus},
                   {
                     headers: {
                       Authorization: `Bearer ${token}`,
                       'Content-Type': 'application/json',
                     },
-                  }
+                  },
                 );
 
                 console.log('Task status updated:', response.data);
 
-                setTask((prevTask) => ({ ...prevTask, status: response.data.status }));
+                setTask(prevTask => ({
+                  ...prevTask,
+                  status: response.data.status,
+                }));
                 setIsTaskCompleted(response.data.status === 'Completed');
 
                 if (route.params.handleUpdateTaskStatus) {
@@ -280,25 +291,25 @@ const TaskDetails = ({ route, navigation }) => {
   LocaleConfig.defaultLocale = 'en';
   while (currentDate <= endDate) {
     const date = currentDate.toISOString().split('T')[0];
-    rangeDates[date] = { color: '#43BE31' };
+    rangeDates[date] = {color: '#43BE31'};
     currentDate.setUTCDate(currentDate.getUTCDate() + 1);
   }
 
   const formatDeadline = deadline => {
     const date = new Date(deadline);
     const day = date.getDate().toString().padStart(2, '0');
-    const options = { month: 'short' };
+    const options = {month: 'short'};
     const monthName = new Intl.DateTimeFormat('en-US', options).format(date);
     const formattedDeadline = `${day} ${monthName}`;
-    return { day, monthName, formattedDeadline };
+    return {day, monthName, formattedDeadline};
   };
 
   const formatCreatedAt = createdAt => {
     const date = new Date(createdAt);
     const day = date.getDate().toString().padStart(2, '0');
-    const options = { month: 'short' };
+    const options = {month: 'short'};
     const dayName = new Intl.DateTimeFormat('en-US', options).format(date);
-    return { day, dayName };
+    return {day, dayName};
   };
 
   const customDayRenderer = (date, item) => {
@@ -311,10 +322,10 @@ const TaskDetails = ({ route, navigation }) => {
         const isDeadline = dateString === deadline.split('T')[0];
 
         const cornerStyle = {
-          borderTopLeftRadius: (isStartingDay || isDeadline) ? 17.5 : 0,
-          borderBottomLeftRadius: (isStartingDay || isDeadline) ? 17.5 : 0,
-          borderTopRightRadius: (isEndingDay || isDeadline) ? 17.5 : 0,
-          borderBottomRightRadius: (isEndingDay || isDeadline) ? 17.5 : 0,
+          borderTopLeftRadius: isStartingDay || isDeadline ? 17.5 : 0,
+          borderBottomLeftRadius: isStartingDay || isDeadline ? 17.5 : 0,
+          borderTopRightRadius: isEndingDay || isDeadline ? 17.5 : 0,
+          borderBottomRightRadius: isEndingDay || isDeadline ? 17.5 : 0,
         };
 
         return (
@@ -326,25 +337,31 @@ const TaskDetails = ({ route, navigation }) => {
         console.error('Error processing date:', error);
       }
     }
-
     return null;
   };
+
+  const isOwnComment = commentUsername => {
+    return commentUsername === route.params.username;
+  };
+
   return (
     <KeyboardAvoidingView
       style={[styles.container, dynamicStyles.container]}
       behavior={Platform.OS === 'ios' ? 'padding' : null}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-    >
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
       <ScrollView
-        contentContainerStyle={[styles.scrollContainer, dynamicStyles.container]}
-        showsVerticalScrollIndicator={false}
-      >
+        contentContainerStyle={[
+          styles.scrollContainer,
+          dynamicStyles.container,
+        ]}
+        showsVerticalScrollIndicator={false}>
         <View style={[styles.container, dynamicStyles.container]}>
-          <Text style={[styles.Tasktitle, dynamicStyles.Textdark]}>Task: {task.title}</Text>
-          {/* <TouchableOpacity style={[styles.EditBox,]}>
-            <Image style={styles.SendIcon} source={require('../assets/EditIcon.png')} />
-          </TouchableOpacity> */}
-          <Text style={[styles.Taskdecription, dynamicStyles.descDark]}>Description: {task.description}</Text>
+          <Text style={[styles.Tasktitle, dynamicStyles.Textdark]}>
+            Task: {task.title}
+          </Text>
+          <Text style={[styles.Taskdecription, dynamicStyles.descDark]}>
+            Description: {task.description}
+          </Text>
 
           <View style={styles.divider} />
 
@@ -354,11 +371,10 @@ const TaskDetails = ({ route, navigation }) => {
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
-            <View >
+            <View>
               <LinearGradient
                 colors={['#FFD700', '#FFA500']}
-                style={styles.Prioritybox}
-              >
+                style={styles.Prioritybox}>
                 <Text style={styles.TaskPriorityText}>
                   Priority: {task.priority}
                 </Text>
@@ -368,8 +384,7 @@ const TaskDetails = ({ route, navigation }) => {
             <View>
               <LinearGradient
                 colors={['#FF6347', '#FF0000']}
-                style={styles.Deadlinebox}
-              >
+                style={styles.Deadlinebox}>
                 <Text style={styles.DeadlineText}>
                   Deadline: {formatDeadline(task.deadline).formattedDeadline}
                 </Text>
@@ -383,47 +398,70 @@ const TaskDetails = ({ route, navigation }) => {
                 isTaskCompleted && styles.disabledButton,
               ]}
               onPress={() => handleToggleCompletion(task._id)}
-              disabled={isTaskCompleted}
-            >
+              disabled={isTaskCompleted}>
               <LinearGradient
-                colors={isTaskCompleted ? ['#808080', '#808080'] : ['#3498db', '#007BFF']}
-                style={styles.StatusBox}
-              >
+                colors={
+                  isTaskCompleted
+                    ? ['#808080', '#808080']
+                    : ['#3498db', '#007BFF']
+                }
+                style={styles.StatusBox}>
                 <Text style={styles.buttonText}>
                   {isTaskCompleted ? 'Task Completed' : 'Mark Completed'}
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
-
           </View>
-          <Calendar
-            style={styles.datePicker}
-            current={deadline}
-            markingType={'period'}
-            markedDates={{
-              ...rangeDates,
-              ...highlightedDates,
-              [deadline.split('T')[0]]: { color: 'red', endingDay: true },
-            }}
-            renderDay={(date, item) => customDayRenderer(date, item)}
-          />
+          <TouchableOpacity
+            onPress={() => setCalendarVisible(!isCalendarVisible)}>
+            <Text style={styles.toggleButton}>
+              {isCalendarVisible ? 'Hide Calendar' : 'Show Calendar'}
+            </Text>
+          </TouchableOpacity>
+
+          {isCalendarVisible && (
+            <Calendar
+              style={styles.datePicker}
+              current={deadline}
+              markingType={'period'}
+              markedDates={{
+                ...rangeDates,
+                ...highlightedDates,
+                [deadline.split('T')[0]]: {color: 'red', endingDay: true},
+              }}
+              renderDay={(date, item) => customDayRenderer(date, item)}
+            />
+          )}
 
           <ScrollView
-            ref={(ref) => { this.scrollView = ref; }}
+            ref={scrollViewRef}
             onContentSizeChange={() => {
-              this.scrollView.scrollToEnd({ animated: true });
+              scrollViewRef.current.scrollToEnd({animated: true});
             }}
             style={styles.commentContainer}
-            showsVerticalScrollIndicator={false}
-          >
+            showsVerticalScrollIndicator={false}>
             {comments.map((comment, index) => (
               <View
                 key={index}
                 style={[
                   styles.commentBox,
-                  { alignSelf: comment.username === route.params.username ? 'flex-end' : 'flex-start', height: 'auto', },
-                ]}
-              >
+                  {
+                    alignSelf: isOwnComment(comment.username)
+                      ? 'flex-end'
+                      : 'flex-start',
+                    marginLeft: isOwnComment(comment.username)
+                      ? width * 0.02
+                      : 0.05,
+                    marginRight: isOwnComment(comment.username)
+                      ? 0.05
+                      : width * 0.02,
+                    height: 'auto',
+                    width: 'auto',
+                    backgroundColor: isOwnComment(comment.username)
+                      ? '#007BFF'
+                      : '#777',
+                  },
+                ]}>
                 <Text style={styles.commentor}>{comment.username}</Text>
                 <Text style={styles.commentText}>{comment.message}</Text>
               </View>
@@ -433,30 +471,36 @@ const TaskDetails = ({ route, navigation }) => {
           <TextInput
             style={[
               styles.input,
-              { color: '#000', backgroundColor: '#fff', ...styles.shadow },
+              {color: '#000', backgroundColor: '#fff', ...styles.shadow},
               dynamicStyles.input,
-              { height: Math.max(40, height * 0.07) },
+              {
+                height:
+                  Platform.OS === 'android'
+                    ? Math.max(40, height * 0.07)
+                    : Math.max(40, height * 0.06),
+              },
             ]}
             placeholderTextColor="#999"
             placeholder="Comment"
             onChangeText={handleCommentChange}
             value={comment}
             multiline={true}
-            onContentSizeChange={(e) => {
+            onContentSizeChange={e => {
               const newHeight = Math.max(40, e.nativeEvent.contentSize.height);
-              this.scrollView.scrollToEnd({ animated: true });
+              scrollViewRef.current.scrollToEnd({animated: true});
             }}
           />
 
           <TouchableOpacity
-            style={[{ ...styles.shadow }]}
+            style={[{...styles.shadow}]}
             onPress={handleCommentSubmit}>
-             
             <LinearGradient
               colors={['#3498db', '#007BFF']}
-              style={styles.CommentSendBtn}
-            > 
-             <Image style={styles.SendIcon} source={require('../assets/Send.png')} />
+              style={styles.CommentSendBtn}>
+              <Image
+                style={styles.SendIcon}
+                source={require('../assets/Send.png')}
+              />
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -476,8 +520,10 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   commentContainer: {
-    height: width * 0.08,
-    marginTop: height * 0.03,
+    height: width * 0.2,
+    marginTop: height * 0.02,
+    marginLeft: width * 0.05,
+    marginRight: width * 0.05,
   },
   completedButton: {
     backgroundColor: '#808080',
@@ -512,7 +558,7 @@ const styles = StyleSheet.create({
     marginTop: height * -0.085,
     marginBottom: height * 0.03,
     width: width * 0.12,
-    height: height * 0.060,
+    height: height * 0.06,
     marginLeft: width * 0.78,
   },
   SendIcon: {
@@ -580,7 +626,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     padding: width * 0.025,
-    marginTop: height * 0.03,
+    marginTop: height * 0.01,
     marginBottom: height * 0.02,
     borderRadius: width * 0.06,
     fontSize: width * 0.04,
@@ -588,6 +634,26 @@ const styles = StyleSheet.create({
     width: width * 0.75,
     paddingLeft: width * 0.04,
     paddingRight: width * 0.04,
+    ...Platform.select({
+      ios: {
+        shadowColor: 'rgba(0, 0, 0, 0.1)',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.8,
+        shadowRadius: 10,
+      },
+      android: {
+        shadowOffset: {
+          width: width * 0,
+          height: height * 1,
+        },
+        shadowOpacity: 0.8,
+        shadowRadius: 3.5,
+        elevation: 20,
+      },
+    }),
   },
   Taskdecription: {
     fontSize: width * 0.03,
@@ -616,49 +682,35 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   commentBox: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: width * 0.02,
-    width: width * 0.9,
+    backgroundColor: '#007BFF',
+    borderRadius: width * 0.03,
+    width: width * 0.7,
     height: height * 0.07,
     marginTop: height * 0.02,
     marginBottom: height * 0.01,
     padding: width * 0.04,
-    borderRadius: width * 1,
-  },
-  commentText: {
-    fontSize: width * 0.04,
-  },
-  shadow: {
-    shadowOffset: {
-      width: width * 0,
-      height: height * 1,
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 3.5,
-    elevation: 20,
   },
   datePicker: {
     backgroundColor: '#fff',
     marginTop: height * 0.015,
-    marginBottom: height * 0.006,
     borderRadius: width * 0.03,
-    elevation: 10,
+    elevation: Platform.OS === 'android' ? 3 : 0,
     shadowColor: '#000000',
+    shadowOpacity: 0.2,
     overflow: 'hidden',
   },
   commentor: {
     fontSize: width * 0.03,
     fontWeight: 'bold',
     marginTop: -7,
-    color: '#333',
+    color: '#EEE',
+    marginLeft: width * 0.02,
+    marginRight: width * 0.02,
   },
-  EditBox: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: height * 0.01,
-    borderRadius: width * 0.03,
-    marginTop: height * -0.05,
-    marginBottom: height * 0.02,
-    alignSelf: 'flex-end',
+  commentText: {
+    color: '#FFF',
+    fontSize: width * 0.04,
+    marginLeft: width * 0.02,
+    marginRight: width * 0.02,
   },
 });

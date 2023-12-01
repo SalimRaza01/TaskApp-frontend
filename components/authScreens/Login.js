@@ -196,12 +196,12 @@ const styles = StyleSheet.create({
     fontSize: width * 0.03,
     fontWeight: "bold",
     color: "#FFFFFF",
-    marginTop: height * -0.06,
+    marginTop: Platform.OS === 'android' ? height * -0.06 : height * -0.05,
     marginBottom: height * -0.15,
     marginLeft: width * 0.55
   },
   AppName: {
-    marginTop: height * -0.15,
+    marginTop: Platform.OS === 'android' ? height * -0.14 : height * -0.11,
     marginBottom: height * -0.01,
     fontSize: width * 0.08,
     fontWeight: "bold",
@@ -209,10 +209,10 @@ const styles = StyleSheet.create({
     marginLeft: width * 0.55
   },
   LoginImage: {
-    marginLeft: width * 0.08,
-    width: width * 0.45,
-    height: width * 0.45,
-    marginTop: height * 0.04,
+    marginLeft: Platform.OS === 'android' ? width * 0.06 : width * 0.10,
+    width: Platform.OS === 'android' ? width * 0.45 : width * 0.40,
+    height: Platform.OS === 'android' ? height * 0.20 : height * 0.15,
+    marginTop: Platform.OS === 'android' ? height * 0.04 : height * 0.1,
   },
   LoginContainer: {
     padding: 20,
