@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   inputLabel2: {
-    marginTop: height * 0.01,
+    marginTop: Platform.OS === 'android' ? height * 0.01 : height * 0.015,
     marginLeft: width * 0.02,
     fontSize: width * 0.04,
     fontWeight: 'bold',
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   CalenderShow:{
     width: width * 0.06,
     height: height * 0.03,
-    marginTop: height * -0.03,
+    marginTop: Platform.OS === 'android' ? height * -0.03 : height * -0.025,
     marginLeft: width * 0.75,
   }
 });
