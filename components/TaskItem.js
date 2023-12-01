@@ -49,13 +49,27 @@ const TaskItem = ({ task, response, openTaskDetails, token, username, handleDele
   };
 
   const swipeoutBtns = [
-    {
-      component: <CustomSwipeoutButton2 onPress2={() => onEdit(task)} imageSource={require('../assets/EditIcon.png')} backgroundColor='#FFFFFF' />,
+    task.status !== 'Completed' && {
+      component: (
+        <CustomSwipeoutButton2
+          onPress2={() => onEdit(task)}
+          imageSource={require('../assets/EditIcon.png')}
+          backgroundColor='#FFFFFF'
+          height={height * 0.09} 
+        />
+      ),
     },
     {
-      component: <CustomSwipeoutButton onPress={() => handleDeleteTask(task._id)} imageSource={require('../assets/Deleteicon.png')} backgroundColor='#FFFFFF' />,
-    }
-  ];
+      component: (
+        <CustomSwipeoutButton
+          onPress={() => handleDeleteTask(task._id)}
+          imageSource={require('../assets/Deleteicon.png')}
+          backgroundColor='#FFFFFF'
+          height={height * 0.09} 
+        />
+      ),
+    },
+  ].filter(Boolean);
 
   const formatDeadline = deadline => {
     try {
@@ -132,7 +146,7 @@ const TaskItem = ({ task, response, openTaskDetails, token, username, handleDele
           <Text style={[styles.taskDescription, dynamicStyles.Grey]}>
             Description:  {trimDescription(task.description, 20)}
           </Text>
-          {/* <Text style={styles.taskStatus}>Status: {task.status}</Text> */}
+
           <Text style={styles.taskDeadline}>
             Deadline: {formatDeadline(task.deadline).formattedDeadline}
           </Text>

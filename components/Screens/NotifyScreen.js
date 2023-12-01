@@ -74,15 +74,15 @@ const NotifyScreen = (props) => {
 
   useEffect(() => {
     console.log('Token in NotifyScreen:', props.route.params.token);
-    fetchTasks();
+    fetchTasks(); 
+    const intervalId = setInterval(() => {
+      if (notificationEnabled) {
+        fetchTasks(); 
+      }
+    }, 1000);
+    return () => clearInterval(intervalId);
   }, [notificationEnabled, props.route.params.token]);
-
-  const toggleNotification = () => {
-    setNotificationEnabled((prev) => !prev);
-    if (!notificationEnabled) {
-      fetchTasks();
-    }
-  };
+  
 
   if (loading) {
     return (
