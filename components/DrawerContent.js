@@ -37,7 +37,7 @@ const DrawerContent = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate('Profile')} >
+      <TouchableOpacity >
         <Image style={styles.UserProfileImage} source={require('../assets/profile.png')} />
       </TouchableOpacity>
 
@@ -115,15 +115,11 @@ const styles = StyleSheet.create({
     borderBottomColor: 'black',
     width: width * 0.6,
     marginTop: height * 0.009,
-    elevation: 50,
-  },
-
-  UserProfileImage: {
-    alignSelf: "flex-end",
-    width: width * 0.11,
-    height: width * 0.11,
-    marginBottom: height * -0.012,
-    marginTop: height * -0.05,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: Platform.OS === 'android' ? 2 : 20, //,
+    elevation: Platform.OS === 'android' ? 50 : 0, //
   },
   noTasksImage: {
     alignSelf: "center",
@@ -139,7 +135,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: width * 0.16,
     height: width * 0.16,
-    marginTop: height * 0.05,
+    marginTop: height * 0.09,
     borderRadius: width * 1,
     borderWidth: 2,
     borderColor: "#ccc",
@@ -155,7 +151,11 @@ const styles = StyleSheet.create({
     width: width * 0.6,
     marginLeft: width * 0.06,
     marginTop: height * 0.7,
-    elevation: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: Platform.OS === 'android' ? 2 : 20, 
+    elevation: Platform.OS === 'android' ? 20 : 0, //
   },
   LogoutText: {
     marginLeft: width * 0.03,

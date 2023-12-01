@@ -188,7 +188,11 @@ const styles = StyleSheet.create({
     borderRadius: width * 0.02,
     borderWidth: 0.5,
     borderColor: "#ccc",
-    elevation: 50,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: Platform.OS === 'android' ? 0.5 : 0.2,
+    shadowRadius: Platform.OS === 'android' ? 2 : 20,
+    elevation: Platform.OS === 'android' ? 50 : 0, //
   },
   NotifyTitle: {
     fontSize: width * 0.035,

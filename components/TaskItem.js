@@ -168,7 +168,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     padding: width * 0.03,
     borderRadius: width * 0.03,
-    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: Platform.OS === 'android' ? 0.5 : 0.15,
+    shadowRadius: Platform.OS === 'android' ? 2 : 5,
+    elevation: Platform.OS === 'android' ? 10 : 0, //
     marginTop: height * 0.01,
     marginBottom: height * 0.013,
   },

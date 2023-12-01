@@ -515,7 +515,7 @@ const styles = StyleSheet.create({
     width: width * 0.11,
     height: width * 0.11,
     marginBottom: height * -0.012,
-    marginTop: height * -0.05,
+    marginTop: height * -0.04,
   },
   ViewTaskButton: {
     backgroundColor: "#007BFF",

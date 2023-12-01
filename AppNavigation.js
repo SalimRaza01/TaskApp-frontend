@@ -56,7 +56,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
           right: 20,
           elevation: 0,
           backgroundColor: isDarkTheme ? '#333' : '#FFFFFF',
-          borderRadius: 15,
+          borderRadius: Platform.OS === 'android' ? 15 : 50,
           height: 75,
           ...styles.shadow,
         },
@@ -84,6 +84,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
             <View>
               <Image
                 style={{
+                  marginTop: Platform.OS === 'android' ? 0 : height * 0.035,
                   width: width * 0.06,
                   height: width * 0.06,
                   tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
@@ -103,6 +104,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
             <View>
               <Image
                 style={{
+                  marginTop: Platform.OS === 'android' ? 0 : height * 0.035,
                   width: width * 0.06,
                   height: width * 0.06,
                   tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
@@ -121,6 +123,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
             <View>
               <Image
                 style={{
+                  marginTop: Platform.OS === 'android' ? 0 : height * 0.035,
                   width: width * 0.06,
                   height: width * 0.06,
                   tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
@@ -141,6 +144,7 @@ const Tabs = ({ route, handleLogout, isDarkMode }) => {
             <View>
               <Image
                 style={{
+                  marginTop: Platform.OS === 'android' ? 0 : height * 0.035,
                   width: width * 0.06,
                   height: width * 0.06,
                   tintColor: focused ? 'rgb(0, 123, 255)' : dynamicStyles.Text.color,
@@ -326,14 +330,15 @@ const StackNavigator = () => {
 
 const styles = StyleSheet.create({
   shadow: {
-    shadowOffset: {
-      width: width * 0,
-      height: height * 1,
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 3.5,
+    shadowOpacity: Platform.OS === 'android' ? 0.5 : 0.2,
+    shadowRadius: Platform.OS === 'android' ? 3.5 : 20,
     elevation: 20,
   },
+  shadowColor: '#000',
+  shadowOffset: { width: width * 0,
+    height: height * 1,},
+    shadowOpacity: 0.5,
+  elevation: Platform.OS === 'android' ? 50 : 0, //
   Menu: {
     width: width * 0.06,
     height: width * 0.06,
