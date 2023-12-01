@@ -31,6 +31,11 @@ const TaskDetails = ({route, navigation}) => {
   const [comment, setComment] = useState('');
   const [isTaskCompleted, setIsTaskCompleted] = useState(false);
   const [isCalendarVisible, setCalendarVisible] = useState(true);
+  const [isSendButtonVisible, setIsSendButtonVisible] = useState(false);
+
+  useEffect(() => {
+    setIsSendButtonVisible(!!comment.trim());
+  }, [comment]);
 
   const colorScheme = useColorScheme();
   const isDarkTheme = colorScheme === 'dark';
@@ -148,38 +153,40 @@ const TaskDetails = ({route, navigation}) => {
 
   const handleCommentSubmit = async () => {
     setLoading(true);
-
+  
     try {
-      const commentData = {
-        taskId: task._id,
-        comment,
-      };
-
-      const response = await axios.post(
-        `${BASE_URL}/save-comment`,
-        commentData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+      if (validateComment()) {
+        const commentData = {
+          taskId: task._id,
+          comment,
+        };
+  
+        const response = await axios.post(
+          `${BASE_URL}/save-comment`,
+          commentData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
           },
-        },
-      );
-
-      console.log('Comment saved:', response.data);
-      setComment('');
-      fetchComments();
-
-      setTimeout(() => {
-        scrollViewRef.current.scrollToEnd({animated: true});
-      }, 100);
+        );
+  
+        console.log('Comment saved:', response.data);
+        setComment('');
+        fetchComments();
+  
+        setTimeout(() => {
+          scrollViewRef.current.scrollToEnd({animated: true});
+        }, 100);
+      }
     } catch (error) {
       console.error('Error saving comment:', error);
     } finally {
       setLoading(false);
     }
   };
-
+  
   const handleToggleCompletion = async () => {
     try {
       if (task.status === 'Completed') {
@@ -189,7 +196,7 @@ const TaskDetails = ({route, navigation}) => {
         );
         return;
       }
-
+  
       Alert.alert(
         'Confirm Completion',
         'Are you sure you want to mark this task as completed?',
@@ -201,35 +208,37 @@ const TaskDetails = ({route, navigation}) => {
           {
             text: 'Mark Completed',
             onPress: async () => {
-              const newStatus = 'Completed';
-
-              setTask(prevTask => ({...prevTask, status: newStatus}));
-
-              try {
-                const response = await axios.put(
-                  `${BASE_URL}/update/${task._id}`,
-                  {status: newStatus},
-                  {
-                    headers: {
-                      Authorization: `Bearer ${token}`,
-                      'Content-Type': 'application/json',
+              if (validateComment()) {
+                const newStatus = 'Completed';
+  
+                setTask(prevTask => ({...prevTask, status: newStatus}));
+  
+                try {
+                  const response = await axios.put(
+                    `${BASE_URL}/update/${task._id}`,
+                    {status: newStatus},
+                    {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                      },
                     },
-                  },
-                );
-
-                console.log('Task status updated:', response.data);
-
-                setTask(prevTask => ({
-                  ...prevTask,
-                  status: response.data.status,
-                }));
-                setIsTaskCompleted(response.data.status === 'Completed');
-
-                if (route.params.handleUpdateTaskStatus) {
-                  route.params.handleUpdateTaskStatus(response.data);
+                  );
+  
+                  console.log('Task status updated:', response.data);
+  
+                  setTask(prevTask => ({
+                    ...prevTask,
+                    status: response.data.status,
+                  }));
+                  setIsTaskCompleted(response.data.status === 'Completed');
+  
+                  if (route.params.handleUpdateTaskStatus) {
+                    route.params.handleUpdateTaskStatus(response.data);
+                  }
+                } catch (error) {
+                  console.error('Error updating task status:', error);
                 }
-              } catch (error) {
-                console.error('Error updating task status:', error);
               }
             },
           },
@@ -239,6 +248,7 @@ const TaskDetails = ({route, navigation}) => {
       console.error('Error updating task status:', error);
     }
   };
+  
 
   const rangeDates = {};
   let currentDate, endDate;
@@ -347,6 +357,18 @@ const TaskDetails = ({route, navigation}) => {
   const isOwnComment = commentUsername => {
     return commentUsername === route.params.username;
   };
+  
+  const validateComment = () => {
+    if (!comment.trim()) {
+      // Alert.alert('Validation Error', 'Comment cannot be empty.');
+      return false;
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    setIsSendButtonVisible(!!comment.trim());
+  }, [comment]);
 
   return (
     <KeyboardAvoidingView
@@ -477,42 +499,47 @@ const TaskDetails = ({route, navigation}) => {
           </ScrollView>
 
           <TextInput
-            style={[
-              styles.input,
-              {
-                color: '#000',
-                backgroundColor: '#fff',
-                ...styles.shadow,
-                paddingTop: Platform.OS === 'ios' ? 13 : 0,
-                paddingBottom: Platform.OS === 'ios' ? 10 : 0,
-              },
-              dynamicStyles.input,
-              {
-                height:
-                  Platform.OS === 'android'
-                    ? Math.max(40, height * 0.07)
-                    : Math.max(40, height * 0.06),
-              },
-            ]}
-            placeholderTextColor="#999"
-            placeholder="Comment"
-            onChangeText={handleCommentChange}
-            value={comment}
-            multiline={true}
-          />
+        style={[
+          styles.input,
+          {
+            color: '#000',
+            backgroundColor: '#fff',
+            ...styles.shadow,
+            paddingTop: Platform.OS === 'ios' ? 13 : 0,
+            paddingBottom: Platform.OS === 'ios' ? 10 : 0,
+            width: isSendButtonVisible ? width * 0.75 : width * 0.9,
+          },
+          dynamicStyles.input,
+          {
+            height:
+              Platform.OS === 'android'
+                ? Math.max(40, height * 0.07)
+                : Math.max(40, height * 0.06),
+          },
+        ]}
+        placeholderTextColor="#999"
+        placeholder="Comment"
+        onChangeText={handleCommentChange}
+        value={comment}
+        multiline={true}
+      />
 
-          <TouchableOpacity
-            style={[{...styles.shadow}]}
-            onPress={handleCommentSubmit}>
-            <LinearGradient
-              colors={['#3498db', '#007BFF']}
-              style={styles.CommentSendBtn}>
-              <Image
-                style={styles.SendIcon}
-                source={require('../assets/Send.png')}
-              />
-            </LinearGradient>
-          </TouchableOpacity>
+      {isSendButtonVisible && (
+        <TouchableOpacity
+          style={[{ ...styles.shadow }]}
+          onPress={handleCommentSubmit}
+        >
+          <LinearGradient
+            colors={['#3498db', '#007BFF']}
+            style={styles.CommentSendBtn}
+          >
+            <Image
+              style={styles.SendIcon}
+              source={require('../assets/Send.png')}
+            />
+          </LinearGradient>
+        </TouchableOpacity>
+      )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

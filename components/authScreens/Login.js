@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CheckBox from '@react-native-community/checkbox';
 import { useColorScheme } from 'react-native';
 import { Alert, BackHandler } from 'react-native';
 
@@ -24,7 +23,6 @@ export default function Login() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [stayLoggedIn, setStayLoggedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const colorScheme = useColorScheme();
@@ -43,12 +41,6 @@ export default function Login() {
     Text: {
       color: isDarkTheme ? '#FFFFFF' : '#000',
     },
-    // input: {
-    //   color: isDarkTheme ? '#FFFFFF' : '#000',
-    //   backgroundColor: isDarkTheme ? '#444' : '#FFFFFF',
-    //   borderWidth: 0.5,
-    //   borderColor: isDarkTheme ? '#EEEEEE' : '#ccc',
-    // }
   };
 
   const navigation = useNavigation();
@@ -70,11 +62,6 @@ export default function Login() {
           await AsyncStorage.setItem('authToken', token);
           if (user._id) {
             await AsyncStorage.setItem('userId', user._id);
-          }
-          if (stayLoggedIn) {
-            await AsyncStorage.setItem('stayLoggedIn', 'true');
-          } else {
-            await AsyncStorage.removeItem('stayLoggedIn');
           }
           console.log('Login successful. Welcome, ' + user.username, user.email, token);
           navigation.navigate('Drawer', { username: user.username, email: user.email, token, isDarkTheme });
@@ -153,14 +140,6 @@ export default function Login() {
                 />
               </TouchableOpacity>
             </View>
-            {/* <View style={styles.stayLoggedInContainer}>
-          <CheckBox style={styles.checkbox}
-            value={stayLoggedIn}
-            onValueChange={value => setStayLoggedIn(value)}
-          />
-          <Text style={styles.stayLoggedInText}>Stay Logged In</Text>
-        </View> */}
-
             <View style={{ alignContent: "center", alignItems: "center" }}>
               <TouchableOpacity
                 style={[styles.button, { backgroundColor: "#007BFF" }]}
@@ -248,15 +227,19 @@ const styles = StyleSheet.create({
     borderRadius: width * 0.02,
     fontSize: width * 0.03,
     width: width * 0.8,
+    height: height * 0.06,
     color: '#000',
     backgroundColor: '#fff'
   },
   button: {
     width: width * 0.5,
+    height: height * 0.06,
     padding: width * 0.030,
     borderRadius: width * 1,
     marginTop: height * 0.06,
     alignItems: "center",
+    textAlign:'center',
+    justifyContent:'center',
   },
   buttonText: {
     color: "#FFFFFF",

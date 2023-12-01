@@ -275,23 +275,6 @@ const StackNavigator = () => {
     };
   };
 
-  useEffect(() => {
-    checkIfUserIsLoggedIn();
-  }, []);
-
-  const checkIfUserIsLoggedIn = async () => {
-    try {
-      const authToken = await AsyncStorage.getItem('authToken');
-      const stayLoggedIn = await AsyncStorage.getItem('stayLoggedIn');
-      if (authToken && stayLoggedIn === 'true') {
-        const userId = await AsyncStorage.getItem('userId');
-      } else {
-      }
-    } catch (error) {
-      console.error('Error checking login status:', error);
-    }
-  };
-
   return (
     <Stack.Navigator
       screenOptions={{

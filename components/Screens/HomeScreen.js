@@ -112,8 +112,6 @@ const HomeScreen = ({ route }) => {
               dates[createdDate] = { selected: true, selectedColor: "#0A79DF" };
               dates[deadlineDate] = { selected: true, selectedColor: "#0A79DF" };
             } catch (error) {
-              // console.error('Error processing date:', error);
-              // console.error('Task with problematic dates:', task);
             }
             return dates;
           }, {});
@@ -141,10 +139,8 @@ const HomeScreen = ({ route }) => {
     };
 
     if (task._id) {
-      // If task has an ID, it's an edit
       handleEditTask(updatedTask);
     } else {
-      // If task doesn't have an ID, it's an add
       handleCreateTask(updatedTask);
     }
   };
@@ -257,20 +253,17 @@ const HomeScreen = ({ route }) => {
   };
 
   const handleCancel = () => {
-    if (task._id) {
-      setTask({
-        title: '',
-        description: '',
-        status: 'Pending',
-        deadline: '',
-        createdAt: '',
-        priority: '',
-        assignedUser: '',
-      });
-    } else {
-      setModalVisible(false);
-      setValidationError(false);
-    }
+    setTask({
+      title: '',
+      description: '',
+      status: 'Pending',
+      deadline: '',
+      createdAt: '',
+      priority: '',
+      assignedUser: '',
+    });
+    setModalVisible(false);
+    setValidationError(false);
   };
 
   const openModal = () => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Modal,
   TextInput,
   ScrollView,
+  Image
 } from 'react-native';
 import DatePicker from 'react-native-modern-datepicker';
 import {Picker} from '@react-native-picker/picker';
@@ -27,6 +28,8 @@ const TaskModal = ({
   setAssignedUser,
   isEdit,
 }) => {
+  const [calendarVisible, setCalendarVisible] = useState(false);
+
   const colorScheme = useColorScheme();
   const isDarkTheme = colorScheme === 'dark';
 
@@ -68,6 +71,7 @@ const TaskModal = ({
       color: isDarkTheme ? '#FFF' : '#000',
     },
   };
+
   const renderPicker = () => {
     if (Platform.OS === 'ios') {
       return (
@@ -86,7 +90,6 @@ const TaskModal = ({
           }}
           onValueChange={value => setTask({...task, priority: value})}
           items={[
-            // {label: 'Select Priority', value: ''},
             {label: 'High', value: 'High'},
             {label: 'Medium', value: 'Medium'},
             {label: 'Low', value: 'Low'},
@@ -96,7 +99,11 @@ const TaskModal = ({
     } else {
       return (
         <Picker
-          style={[styles.Pickerinput, dynamicStyles.pickerContainer, dynamicStyles.picker]}
+          style={[
+            styles.Pickerinput,
+            dynamicStyles.pickerContainer,
+            dynamicStyles.picker,
+          ]}
           selectedValue={task && task.priority ? task.priority : ''}
           onValueChange={value => setTask({...task, priority: value})}>
           <Picker.Item label="High" value="High" />
@@ -142,12 +149,22 @@ const TaskModal = ({
           />
           <Text style={styles.inputLabel}>Set Priority:</Text>
           {renderPicker()}
-          <Text style={styles.inputLabel2}>Set Deadline:</Text>
-          <DatePicker
-            mode="datepicker"
-            selected={task && task.deadline ? task.deadline : ''}
-            onDateChange={date => setTask({...task, deadline: date})}
-          />
+         
+         <View style={styles.Prioritybox}>
+         <TouchableOpacity
+            onPress={() => setCalendarVisible(!calendarVisible)}>
+               <Text style={styles.inputLabel2}>Set Deadline:</Text>
+               <Image style={styles.CalenderShow} source={require('../assets/Open.png')} />
+          </TouchableOpacity>
+         </View>
+
+          {calendarVisible && (
+            <DatePicker
+              mode="datepicker"
+              selected={task && task.deadline ? task.deadline : ''}
+              onDateChange={date => setTask({...task, deadline: date})}
+            />
+          )}
           {validationError && (
             <Text style={styles.errorText}>
               Error: Please fill in the required fields
@@ -294,9 +311,8 @@ const styles = StyleSheet.create({
   },
   inputLabel2: {
     marginTop: height * 0.01,
-    marginBottom: height * 0.02,
     marginLeft: width * 0.02,
-    fontSize: width * 0.03,
+    fontSize: width * 0.04,
     fontWeight: 'bold',
   },
   errorText: {
@@ -304,4 +320,21 @@ const styles = StyleSheet.create({
     fontSize: width * 0.04,
     marginBottom: height * 0.02,
   },
+  Prioritybox: {
+    flexDirection: 'row',
+    justifyContent:'space-between',
+    backgroundColor: '#FFFFFF',
+    borderRadius: width * 0.015,
+    width: width * 0.86,
+    height: height * 0.05,
+    marginTop: height * 0.02,
+    marginLeft: width * 0.02,
+    marginBottom: height * 0.02,
+  },
+  CalenderShow:{
+    width: width * 0.06,
+    height: height * 0.03,
+    marginTop: height * -0.03,
+    marginLeft: width * 0.75,
+  }
 });
